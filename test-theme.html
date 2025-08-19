@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Toggle Test</title>
+    <style>
+        body {
+            font-family: system-ui;
+            padding: 20px;
+            background: #f3f4f6;
+            transition: background 0.3s;
+        }
+        body.dark {
+            background: #111827;
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        body.dark .test-container {
+            background: #1f2937;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background: #10b981;
+            color: white;
+            display: none;
+        }
+        .status.show {
+            display: block;
+        }
+        .error {
+            background: #ef4444;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        body.dark iframe {
+            border-color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>BPMN Studio Theme Toggle Test</h1>
+        <p>This page tests the theme switching functionality without createSVGMatrix errors.</p>
+        
+        <button id="toggleTheme">Toggle Theme</button>
+        <button id="openStudio" style="margin-left: 10px;">Open Studio in iframe</button>
+        
+        <div id="status" class="status"></div>
+        
+        <div id="iframeContainer"></div>
+    </div>
+
+    <script>
+        let isDark = false;
+        const toggleBtn = document.getElementById('toggleTheme');
+        const openBtn = document.getElementById('openStudio');
+        const status = document.getElementById('status');
+        const iframeContainer = document.getElementById('iframeContainer');
+        
+        // Toggle theme
+        toggleBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            document.body.classList.toggle('dark', isDark);
+            
+            // Show status
+            status.textContent = `Theme switched to ${isDark ? 'dark' : 'light'} mode`;
+            status.className = 'status show';
+            setTimeout(() => {
+                status.className = 'status';
+            }, 2000);
+            
+            // If iframe exists, try to toggle its theme
+            const iframe = document.querySelector('iframe');
+            if (iframe && iframe.contentWindow) {
+                try {
+                    iframe.contentWindow.document.documentElement.classList.toggle('dark', isDark);
+                    console.log('Theme toggled in iframe');
+                } catch (e) {
+                    console.log('Cannot access iframe (cross-origin)');
+                }
+            }
+        });
+        
+        // Open studio in iframe
+        openBtn.addEventListener('click', () => {
+            if (!iframeContainer.querySelector('iframe')) {
+                const iframe = document.createElement('iframe');
+                iframe.src = 'http://localhost:3002/studio';
+                iframe.title = 'BPMN Studio';
+                iframeContainer.appendChild(iframe);
+                
+                status.textContent = 'Studio loaded in iframe - try toggling theme now';
+                status.className = 'status show';
+                setTimeout(() => {
+                    status.className = 'status';
+                }, 3000);
+            }
+        });
+        
+        // Listen for errors
+        window.addEventListener('error', (e) => {
+            if (e.message && e.message.includes('createSVGMatrix')) {
+                status.textContent = `ERROR: ${e.message}`;
+                status.className = 'status show error';
+                console.error('SVG Matrix Error:', e);
+            }
+        });
+        
+        // Log successful operations
+        console.log('Theme test page loaded successfully');
+    </script>
+</body>
+</html>

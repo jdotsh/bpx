@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dark Mode Test</title>
+    <script>
+        function checkDarkMode() {
+            const isDark = document.documentElement.classList.contains('dark');
+            console.log('HTML has dark class:', isDark);
+            console.log('HTML classes:', document.documentElement.className);
+            
+            const result = document.getElementById('result');
+            result.textContent = 'Dark mode is: ' + (isDark ? 'ON' : 'OFF') + '\n' +
+                                'HTML classes: ' + (document.documentElement.className || 'none');
+            
+            // Check computed styles
+            const body = document.body;
+            const bgColor = window.getComputedStyle(body).backgroundColor;
+            console.log('Body background color:', bgColor);
+            
+            // Check iframe if exists
+            const iframe = document.getElementById('studio-frame');
+            if (iframe && iframe.contentDocument) {
+                try {
+                    const iframeDark = iframe.contentDocument.documentElement.classList.contains('dark');
+                    result.textContent += '\nIframe dark mode: ' + (iframeDark ? 'ON' : 'OFF');
+                } catch (e) {
+                    result.textContent += '\nCannot access iframe (cross-origin)';
+                }
+            }
+        }
+        
+        function toggleDark() {
+            document.documentElement.classList.toggle('dark');
+            checkDarkMode();
+        }
+        
+        function toggleStudioDark() {
+            const iframe = document.getElementById('studio-frame');
+            if (iframe && iframe.contentDocument) {
+                try {
+                    const themeBtn = iframe.contentDocument.querySelector('[title="Toggle Theme"]');
+                    if (themeBtn) {
+                        themeBtn.click();
+                        setTimeout(checkDarkMode, 500);
+                    } else {
+                        alert('Theme button not found in iframe');
+                    }
+                } catch (e) {
+                    alert('Cannot access iframe: ' + e);
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            padding: 20px; 
+            background: white;
+            color: black;
+            font-family: system-ui;
+        }
+        .dark body { 
+            background: #111827; 
+            color: white;
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 10px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        #result {
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin: 20px 0;
+            white-space: pre-wrap;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        .dark #result {
+            background: #1f2937;
+            border-color: #374151;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .dark iframe {
+            border-color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dark Mode Toggle Test</h1>
+    <div>
+        <button onclick="toggleDark()">Toggle Dark Mode (This Page)</button>
+        <button onclick="checkDarkMode()">Check Status</button>
+        <button onclick="toggleStudioDark()">Toggle Studio Dark Mode</button>
+    </div>
+    <div id="result"></div>
+    
+    <h2>BPMN Studio Iframe</h2>
+    <iframe id="studio-frame" src="http://localhost:3000/studio"></iframe>
+    
+    <script>
+        // Check initial state
+        window.onload = () => {
+            checkDarkMode();
+            console.log('Test page loaded');
+        };
+    </script>
+</body>
+</html>

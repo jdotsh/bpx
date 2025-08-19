@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// User profile (extends Supabase auth.users)
+model Profile {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String?
+  avatarUrl     String?
+  subscription  Subscription?
+  projects      Project[]
+  diagrams      Diagram[]
+  collaborators Collaborator[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("profiles")
+}
+
+// Subscription management
+model Subscription {
+  id               String   @id @default(cuid())
+  profileId        String   @unique
+  stripeCustomerId String   @unique @map("stripe_customer_id")
+  stripeSubId      String?  @unique @map("stripe_subscription_id")
+  plan             Plan     @default(FREE)
+  status           Status   @default(ACTIVE)
+  currentPeriodEnd DateTime @map("current_period_end")
+  profile          Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status, plan])
+  @@map("subscriptions")
+}
+
+// Projects container
+model Project {
+  id            String         @id @default(cuid())
+  name          String
+  description   String?
+  metadata      Json           @default("{}")
+  version       Int            @default(1)
+  ownerId       String         @map("owner_id")
+  deletedAt     DateTime?      @map("deleted_at")
+  owner         Profile        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  diagrams      Diagram[]
+  collaborators Collaborator[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([ownerId, updatedAt])
+  @@index([name])
+  @@map("projects")
+}
+
+// BPMN Diagrams
+model Diagram {
+  id           String           @id @default(cuid())
+  title        String           @default("Untitled Diagram")
+  bpmnXml      String?          @map("bpmn_xml") @db.Text
+  xmlUrl       String?          @map("xml_url") // For external storage
+  thumbnailUrl String?          @map("thumbnail_url")
+  metadata     Json             @default("{}")
+  projectId    String           @map("project_id")
+  ownerId      String           @map("owner_id")
+  version      Int              @default(1)
+  isPublic     Boolean          @default(false) @map("is_public")
+  deletedAt    DateTime?        @map("deleted_at")
+  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  owner        Profile          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  versions     DiagramVersion[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([projectId, updatedAt], map: "idx_diagrams_project_updated")
+  @@index([ownerId, updatedAt], map: "idx_diagrams_owner_updated")
+  @@index([title], map: "idx_diagrams_title")
+  @@map("diagrams")
+}
+
+// Version history
+model DiagramVersion {
+  id            String   @id @default(cuid())
+  diagramId     String   @map("diagram_id")
+  revNumber     Int      @map("rev_number")
+  bpmnXml       String   @map("bpmn_xml") @db.Text
+  metadata      Json     @default("{}")
+  authorId      String   @map("author_id")
+  changeMessage String?  @map("change_message") // Version message/description
+  diagram       Diagram  @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+
+  @@unique([diagramId, revNumber])
+  @@index([diagramId, revNumber], map: "idx_versions_rev")
+  @@map("diagram_versions")
+}
+
+// Project collaborators
+model Collaborator {
+  id        String   @id @default(cuid())
+  projectId String   @map("project_id")
+  userId    String   @map("user_id")
+  role      Role     @default(VIEWER)
+  invitedBy String   @map("invited_by")
+  joinedAt  DateTime @default(now()) @map("joined_at")
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@map("collaborators")
+}
+
+// Enums
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum Status {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  PAUSED
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+}

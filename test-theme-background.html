@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Background Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: system-ui;
+            transition: background 0.3s;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+        }
+        
+        .canvas-mock {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        /* Light mode */
+        .canvas-light {
+            background-color: #f9fafb;
+            color: #111827;
+        }
+        
+        /* Dark mode */
+        .canvas-dark {
+            background-color: #111827;
+            color: #f9fafb;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        .color-display {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BPMN Studio Theme Background Test</h1>
+        
+        <div class="test-section">
+            <h2>Theme Colors Reference</h2>
+            <div>
+                <h3>Light Mode:</h3>
+                <span class="color-display" style="background: #f9fafb; color: #111827;">#f9fafb (Background)</span>
+                <span class="color-display" style="background: #ffffff; color: #000000; border: 1px solid #000;">#ffffff (Elements)</span>
+            </div>
+            <div>
+                <h3>Dark Mode:</h3>
+                <span class="color-display" style="background: #111827; color: #f9fafb;">#111827 (Background)</span>
+                <span class="color-display" style="background: #1f2937; color: #ffffff; border: 1px solid #fff;">#1f2937 (Elements)</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Canvas Background Test</h2>
+            <button id="toggleTheme">Toggle Theme</button>
+            <button id="checkIframe">Check Studio in iFrame</button>
+            
+            <div id="canvas" class="canvas-mock canvas-light">
+                Canvas Background
+            </div>
+            
+            <div id="status" class="status">
+                Current theme: <span id="currentTheme">light</span> | 
+                Background color: <span id="bgColor">#f9fafb</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Studio iFrame Test</h2>
+            <iframe id="studioFrame" src="http://localhost:3002/studio" style="width: 100%; height: 600px; border: 1px solid #d1d5db; border-radius: 8px;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        let isDark = false;
+        const canvas = document.getElementById('canvas');
+        const toggleBtn = document.getElementById('toggleTheme');
+        const checkBtn = document.getElementById('checkIframe');
+        const currentThemeSpan = document.getElementById('currentTheme');
+        const bgColorSpan = document.getElementById('bgColor');
+        const studioFrame = document.getElementById('studioFrame');
+        
+        function updateTheme() {
+            if (isDark) {
+                canvas.className = 'canvas-mock canvas-dark';
+                currentThemeSpan.textContent = 'dark';
+                bgColorSpan.textContent = '#111827';
+                document.body.style.background = '#1f2937';
+                document.body.style.color = '#f9fafb';
+            } else {
+                canvas.className = 'canvas-mock canvas-light';
+                currentThemeSpan.textContent = 'light';
+                bgColorSpan.textContent = '#f9fafb';
+                document.body.style.background = '#ffffff';
+                document.body.style.color = '#111827';
+            }
+        }
+        
+        toggleBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            updateTheme();
+            
+            // Try to toggle theme in iframe
+            try {
+                const iframeDoc = studioFrame.contentDocument || studioFrame.contentWindow.document;
+                const themeBtn = iframeDoc.querySelector('[title="Toggle Theme"]');
+                if (themeBtn) {
+                    themeBtn.click();
+                    console.log('Toggled theme in iframe');
+                }
+            } catch (e) {
+                console.log('Cannot access iframe (cross-origin):', e);
+            }
+        });
+        
+        checkBtn.addEventListener('click', () => {
+            try {
+                const iframeDoc = studioFrame.contentDocument || studioFrame.contentWindow.document;
+                const container = iframeDoc.querySelector('.djs-container');
+                const svg = iframeDoc.querySelector('.djs-container svg');
+                
+                if (container) {
+                    const bgColor = window.getComputedStyle(container).backgroundColor;
+                    console.log('Canvas container background:', bgColor);
+                    alert(`Canvas container background: ${bgColor}`);
+                }
+                
+                if (svg) {
+                    const svgBg = window.getComputedStyle(svg).backgroundColor;
+                    console.log('SVG background:', svgBg);
+                }
+            } catch (e) {
+                console.log('Cannot access iframe:', e);
+                alert('Cannot access iframe - check console for CORS issues');
+            }
+        });
+        
+        // Log initial state
+        console.log('Theme test page loaded');
+        console.log('Light mode background: #f9fafb');
+        console.log('Dark mode background: #111827');
+    </script>
+</body>
+</html>

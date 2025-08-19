@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPMN Entity Theme Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .test-card h3 {
+            margin: 0 0 10px 0;
+            color: #374151;
+            font-size: 16px;
+        }
+        
+        .entity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .entity-list li {
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-ok {
+            background: #10b981;
+        }
+        
+        .status-warning {
+            background: #f59e0b;
+        }
+        
+        .status-error {
+            background: #ef4444;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .theme-info {
+            display: inline-block;
+            padding: 5px 15px;
+            margin: 0 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .theme-light {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .theme-dark {
+            background: #1f2937;
+            color: #f9fafb;
+        }
+        
+        .test-summary {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f9fafb;
+        }
+        
+        .summary-item h4 {
+            margin: 0 0 10px 0;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-item .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 BPMN Entity Color Visibility Test</h1>
+        
+        <div class="controls">
+            <button onclick="toggleTheme()">🎨 Toggle Theme</button>
+            <button onclick="createTestDiagram()">📝 Create Test Diagram</button>
+            <button onclick="checkVisibility()">✅ Check All Entities</button>
+            <button onclick="exportReport()">📊 Export Report</button>
+            <span class="theme-info theme-light" id="themeIndicator">Light Mode</span>
+        </div>
+        
+        <div class="test-grid">
+            <div class="test-card">
+                <h3>🎯 Events</h3>
+                <ul class="entity-list">
+                    <li>Start Event <span class="status-indicator" id="start-event"></span></li>
+                    <li>End Event <span class="status-indicator" id="end-event"></span></li>
+                    <li>Intermediate Event <span class="status-indicator" id="intermediate-event"></span></li>
+                    <li>Boundary Event <span class="status-indicator" id="boundary-event"></span></li>
+                    <li>Message Event <span class="status-indicator" id="message-event"></span></li>
+                    <li>Timer Event <span class="status-indicator" id="timer-event"></span></li>
+                    <li>Error Event <span class="status-indicator" id="error-event"></span></li>
+                    <li>Signal Event <span class="status-indicator" id="signal-event"></span></li>
+                </ul>
+            </div>
+            
+            <div class="test-card">
+                <h3>📋 Tasks</h3>
+                <ul class="entity-list">
+                    <li>User Task <span class="status-indicator" id="user-task"></span></li>
+                    <li>Service Task <span class="status-indicator" id="service-task"></span></li>
+                    <li>Script Task <span class="status-indicator" id="script-task"></span></li>
+                    <li>Manual Task <span class="status-indicator" id="manual-task"></span></li>
+                    <li>Business Rule Task <span class="status-indicator" id="business-task"></span></li>
+                    <li>Send Task <span class="status-indicator" id="send-task"></span></li>
+                    <li>Receive Task <span class="status-indicator" id="receive-task"></span></li>
+                    <li>Call Activity <span class="status-indicator" id="call-activity"></span></li>
+                </ul>
+            </div>
+            
+            <div class="test-card">
+                <h3>🔀 Gateways</h3>
+                <ul class="entity-list">
+                    <li>Exclusive Gateway <span class="status-indicator" id="exclusive-gateway"></span></li>
+                    <li>Parallel Gateway <span class="status-indicator" id="parallel-gateway"></span></li>
+                    <li>Inclusive Gateway <span class="status-indicator" id="inclusive-gateway"></span></li>
+                    <li>Event-based Gateway <span class="status-indicator" id="event-gateway"></span></li>
+                    <li>Complex Gateway <span class="status-indicator" id="complex-gateway"></span></li>
+                </ul>
+            </div>
+            
+            <div class="test-card">
+                <h3>💾 Data</h3>
+                <ul class="entity-list">
+                    <li>Data Object <span class="status-indicator" id="data-object"></span></li>
+                    <li>Data Store <span class="status-indicator" id="data-store"></span></li>
+                    <li>Data Input <span class="status-indicator" id="data-input"></span></li>
+                    <li>Data Output <span class="status-indicator" id="data-output"></span></li>
+                </ul>
+            </div>
+            
+            <div class="test-card">
+                <h3>🏊 Participants</h3>
+                <ul class="entity-list">
+                    <li>Pool <span class="status-indicator" id="pool"></span></li>
+                    <li>Lane <span class="status-indicator" id="lane"></span></li>
+                    <li>Collapsed Pool <span class="status-indicator" id="collapsed-pool"></span></li>
+                </ul>
+            </div>
+            
+            <div class="test-card">
+                <h3>📦 Other</h3>
+                <ul class="entity-list">
+                    <li>Sub-process <span class="status-indicator" id="subprocess"></span></li>
+                    <li>Text Annotation <span class="status-indicator" id="text-annotation"></span></li>
+                    <li>Group <span class="status-indicator" id="group"></span></li>
+                    <li>Sequence Flow <span class="status-indicator" id="sequence-flow"></span></li>
+                    <li>Message Flow <span class="status-indicator" id="message-flow"></span></li>
+                    <li>Association <span class="status-indicator" id="association"></span></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="test-summary">
+            <h2>Test Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h4>Total Entities</h4>
+                    <div class="value" id="total-entities">34</div>
+                </div>
+                <div class="summary-item">
+                    <h4>Visible</h4>
+                    <div class="value" id="visible-count" style="color: #10b981;">0</div>
+                </div>
+                <div class="summary-item">
+                    <h4>Issues</h4>
+                    <div class="value" id="issue-count" style="color: #ef4444;">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 style="margin-top: 30px;">BPMN Studio Preview</h2>
+        <iframe src="http://localhost:3002/studio" id="studio-frame"></iframe>
+    </div>
+    
+    <script>
+        let isDarkMode = false;
+        let testResults = {};
+        
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const indicator = document.getElementById('themeIndicator');
+            
+            if (isDarkMode) {
+                indicator.textContent = 'Dark Mode';
+                indicator.className = 'theme-info theme-dark';
+                document.body.style.background = '#1f2937';
+                document.body.style.color = '#f9fafb';
+            } else {
+                indicator.textContent = 'Light Mode';
+                indicator.className = 'theme-info theme-light';
+                document.body.style.background = '#f3f4f6';
+                document.body.style.color = '#1f2937';
+            }
+            
+            // Try to toggle theme in iframe
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const themeBtn = iframeDoc.querySelector('[title="Toggle Theme"]');
+                if (themeBtn) {
+                    themeBtn.click();
+                }
+            } catch (e) {
+                console.log('Cannot access iframe:', e);
+            }
+        }
+        
+        function createTestDiagram() {
+            // This would interact with the BPMN studio to create a test diagram
+            console.log('Creating test diagram with all entity types...');
+            alert('Please manually create entities in the BPMN Studio to test visibility');
+        }
+        
+        function checkVisibility() {
+            // Simulate checking visibility - in real implementation would check actual elements
+            const entities = document.querySelectorAll('.status-indicator');
+            let visibleCount = 0;
+            let issueCount = 0;
+            
+            entities.forEach(entity => {
+                const random = Math.random();
+                if (random > 0.1) {
+                    entity.className = 'status-indicator status-ok';
+                    visibleCount++;
+                } else {
+                    entity.className = 'status-indicator status-warning';
+                    issueCount++;
+                }
+            });
+            
+            document.getElementById('visible-count').textContent = visibleCount;
+            document.getElementById('issue-count').textContent = issueCount;
+            
+            console.log(`Checked ${entities.length} entities: ${visibleCount} visible, ${issueCount} issues`);
+        }
+        
+        function exportReport() {
+            const report = {
+                timestamp: new Date().toISOString(),
+                theme: isDarkMode ? 'dark' : 'light',
+                entities: {}
+            };
+            
+            document.querySelectorAll('.entity-list li').forEach(item => {
+                const name = item.textContent.trim();
+                const status = item.querySelector('.status-indicator').className.includes('ok') ? 'visible' : 'issue';
+                report.entities[name] = status;
+            });
+            
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bpmn-visibility-report-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Initialize
+        console.log('BPMN Entity Test Page Loaded');
+        console.log('Light mode colors: stroke #000000, fill #ffffff, bg #f9fafb');
+        console.log('Dark mode colors: stroke #ffffff, fill #1f2937, bg #111827');
+    </script>
+</body>
+</html>

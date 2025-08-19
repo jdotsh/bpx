@@ -1,0 +1,1382 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* BPMN.js styles */
+@import 'bpmn-js/dist/assets/diagram-js.css';
+@import 'bpmn-js/dist/assets/bpmn-js.css';
+@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css';
+@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
+@import 'diagram-js-minimap/assets/diagram-js-minimap.css';
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    
+    /* BPMN Element Colors - Better contrast for light mode */
+    --color-start-event: #389e0d;  /* Darker green */
+    --color-end-event: #cf1322;    /* Darker red */
+    --color-activity: #096dd9;     /* Darker blue */
+    --color-gateway: #d48806;      /* Darker yellow/orange */
+    --color-catch-event: #531dab;  /* Darker purple for better visibility */
+    --color-throw-event: #1d39c4;  /* Dark blue for throw events */
+    --color-boundary-event: #c41d7f; /* Darker pink */
+    --color-data: #13c2c2;         /* Cyan for data objects */
+    --color-participant: #fa541c;  /* Orange for participants */
+    --color-artifact: #8c8c8c;     /* Gray for artifacts */
+    --color-element: #434343;      /* Darker gray for general elements */
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+    
+    /* BPMN Element Colors for Dark Mode - Better contrast */
+    --color-start-event: #95de64;    /* Bright green */
+    --color-end-event: #ff7875;      /* Bright red */
+    --color-activity: #69c0ff;       /* Bright blue */
+    --color-gateway: #ffd666;        /* Bright yellow */
+    --color-catch-event: #b37feb;    /* Bright purple */
+    --color-throw-event: #597ef7;    /* Bright blue for throw events */
+    --color-boundary-event: #ff85c0; /* Bright pink */
+    --color-data: #5cdbd3;           /* Bright cyan for data */
+    --color-participant: #ff9c6e;   /* Bright orange for participants */
+    --color-artifact: #bfbfbf;      /* Light gray for artifacts */
+    --color-element: #8c8c8c;       /* Gray for general elements */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom scrollbar styling - subtle and minimal */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.3);
+}
+
+/* Dark mode scrollbar adjustments */
+.dark *::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.15);
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.25);
+}
+
+/* Hide scrollbar when not hovering for cleaner look */
+.bpmn-palette::-webkit-scrollbar {
+  width: 4px;
+}
+
+.bpmn-palette::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.1);
+}
+
+.bpmn-palette:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+}
+
+/* BPMN Designer specific styles */
+.bpmn-studio-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.bpmn-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ensure palette stays visible during zoom and fills viewport correctly */
+.bpmn-palette {
+  position: relative;
+  z-index: 10;
+  opacity: 1 !important;
+  transform: none !important;
+  height: calc(100vh - 64px); /* Account for toolbar height */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* When palette is collapsed */
+.bpmn-palette:not(.w-64) {
+  overflow-y: visible;
+  overflow-x: visible;
+}
+
+/* Prevent palette from being affected by canvas transformations */
+.bpmn-palette * {
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+/* Isolate canvas zoom from affecting other elements */
+.djs-container {
+  isolation: isolate;
+}
+
+/* Ensure palette icons remain visible and use proper colors */
+.bpmn-palette .bpmn-entry-icon,
+.bpmn-entry .bpmn-entry-icon {
+  opacity: 1 !important;
+  visibility: visible !important;
+  /* Icons will inherit color from parent element style attribute */
+}
+
+/* Ensure boundary and intermediate event icons are visible in light mode */
+.bpmn-icon-intermediate-event-catch-non-interrupting,
+.bpmn-icon-intermediate-event-catch-message,
+.bpmn-icon-intermediate-event-catch-timer,
+.bpmn-icon-intermediate-event-catch-error,
+.bpmn-icon-intermediate-event-catch-signal,
+.bpmn-icon-intermediate-event-catch-condition,
+.bpmn-icon-intermediate-event-catch-link,
+.bpmn-icon-intermediate-event-catch-escalation,
+.bpmn-icon-intermediate-event-catch-compensation,
+.bpmn-icon-intermediate-event-catch-cancel {
+  /* These icons inherit color from parent, ensure it's visible */
+  opacity: 1 !important;
+}
+
+/* Fix icon colors if they're too light in light mode */
+.bpmn-entry[style*="--color-catch-event"] .bpmn-entry-icon,
+.bpmn-entry[style*="--color-boundary-event"] .bpmn-entry-icon {
+  /* Will use the CSS variable which now has better contrast */
+  opacity: 1 !important;
+}
+
+/* Highlighted tool entry */
+.bpmn-palette .highlighted-entry {
+  background-color: hsl(var(--primary) / 0.2) !important;
+  border-color: hsl(var(--primary) / 0.4);
+}
+
+.bpmn-palette .highlighted-entry:hover {
+  background-color: hsl(var(--primary) / 0.3) !important;
+}
+
+/* Visual separation for tools section */
+.bpmn-palette .tools-section {
+  background-color: hsl(var(--muted) / 0.3);
+  padding: 4px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+/* BPMN.js Drag Preview and Hit Detection */
+.djs-drag-group {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* CRITICAL: Fix white background during drag in dark mode */
+.dark .djs-drag-group rect[fill="white"],
+.dark .djs-drag-group rect[fill="#fff"],
+.dark .djs-drag-group rect[fill="#ffffff"],
+.dark .djs-dragging rect[fill="white"],
+.dark .djs-dragging rect[fill="#fff"],
+.dark .djs-dragging rect[fill="#ffffff"],
+.dark .djs-visual rect[fill="white"],
+.dark .djs-visual rect[fill="#fff"],
+.dark .djs-visual rect[fill="#ffffff"] {
+  fill: #374151 !important; /* Dark gray for tasks */
+}
+
+/* Fix drag preview background in dark mode */
+.djs-drag-group .djs-outline {
+  stroke: hsl(var(--border)) !important;
+  fill: transparent !important;
+}
+
+/* Dark mode specific drag preview */
+.dark .djs-drag-group {
+  background: transparent !important;
+}
+
+.dark .djs-drag-group .djs-outline {
+  fill: transparent !important;
+  stroke: #6b7280 !important;
+}
+
+.dark .djs-drag-group .djs-visual rect {
+  fill: #374151 !important; /* Dark gray for dragged elements */
+  stroke: #e5e7eb !important;
+}
+
+.dark .djs-drag-group .djs-visual circle {
+  fill: #1f2937 !important;
+  stroke: #9ca3af !important;
+}
+
+.dark .djs-drag-group .djs-visual polygon {
+  fill: #4b5563 !important;
+  stroke: #9ca3af !important;
+}
+
+.dark .djs-drag-group .djs-visual path {
+  fill: #374151 !important;
+  stroke: #9ca3af !important;
+}
+
+/* Ensure drag preview elements don't have white background */
+.djs-dragger {
+  background: transparent !important;
+}
+
+.dark .djs-dragger {
+  background: transparent !important;
+}
+
+.dark .djs-dragger rect {
+  fill: #374151 !important; /* Match dark mode task color */
+}
+
+.dark .djs-dragger circle {
+  fill: #1f2937 !important;
+}
+
+.dark .djs-dragger path {
+  fill: #374151 !important;
+}
+
+/* Fix the visual feedback during drag */
+.djs-drag-active .djs-visual {
+  opacity: 0.3;
+}
+
+/* Ensure BPMN shapes don't have white fill during drag */
+.dark .djs-drag-group .djs-element rect {
+  fill: #374151 !important;
+}
+
+.dark .djs-drag-group svg {
+  background: transparent !important;
+}
+
+/* Override any inline styles during drag */
+.dark .djs-dragging *[style*="fill: white"],
+.dark .djs-dragging *[style*="fill:white"],
+.dark .djs-dragging *[style*="fill: #fff"],
+.dark .djs-dragging *[style*="fill:#fff"],
+.dark .djs-dragging *[style*="background: white"],
+.dark .djs-dragging *[style*="background:white"] {
+  fill: #374151 !important;
+  background: transparent !important;
+}
+
+/* Hit detection rectangle for drag-and-drop - works in both light and dark mode */
+.djs-hit,
+.djs-hit-all,
+.djs-hit-stroke,
+.djs-hit-click-stroke {
+  fill: none !important;
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+}
+
+/* Override any inline styles that set stroke to white */
+rect.djs-hit[style*="stroke: white"],
+rect.djs-hit-stroke[style*="stroke: white"],
+rect.djs-hit-all[style*="stroke: white"],
+path.djs-hit[style*="stroke: white"] {
+  stroke: transparent !important;
+}
+
+/* Dark mode specific override to ensure transparency */
+.dark rect.djs-hit,
+.dark rect.djs-hit-all,
+.dark rect.djs-hit-stroke,
+.dark path.djs-hit {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+}
+
+/* Ensure pointer events still work */
+.djs-hit-all {
+  pointer-events: all;
+}
+
+.djs-hit-stroke {
+  pointer-events: stroke;
+}
+
+/* Connection hit areas should also be transparent */
+.djs-hit-click-stroke {
+  pointer-events: stroke;
+}
+
+/* Visual feedback during drag */
+.djs-dragging {
+  opacity: 0.5;
+  cursor: grabbing !important;
+}
+
+/* Fix BPMN.js element creation preview background */
+.djs-visual-overlay {
+  background: transparent !important;
+}
+
+/* Fix the white background during element creation/drag */
+.djs-group.djs-element.djs-shape,
+.djs-drag-group.djs-group.djs-element,
+.djs-dragger .djs-element,
+.djs-dragging .djs-element {
+  /* Remove any white fills */
+}
+
+.djs-group.djs-element.djs-shape .djs-visual *[fill="white"],
+.djs-drag-group .djs-visual *[fill="white"],
+.djs-dragger .djs-visual *[fill="white"] {
+  fill: hsl(var(--background)) !important;
+}
+
+/* Dark mode specific - fix element creation preview */
+.dark .djs-group.djs-element.djs-shape .djs-visual *[fill="white"],
+.dark .djs-drag-group .djs-visual *[fill="white"],
+.dark .djs-dragger .djs-visual *[fill="white"],
+.dark .djs-dragging *[fill="white"] {
+  fill: hsl(var(--background)) !important;
+}
+
+/* Fix create tool preview */
+.djs-create-group .djs-visual,
+.djs-create-group .djs-outline {
+  fill: transparent !important;
+}
+
+.djs-create-group .djs-visual rect[fill="white"],
+.djs-create-group .djs-visual path[fill="white"] {
+  fill: hsl(var(--background)) !important;
+}
+
+/* Dark mode create preview */
+.dark .djs-create-group .djs-visual {
+  fill: transparent !important;
+}
+
+.dark .djs-create-group .djs-outline {
+  stroke: hsl(var(--border)) !important;
+  fill: transparent !important;
+}
+
+.dark .djs-create-group .djs-visual rect[fill="white"],
+.dark .djs-create-group .djs-visual path[fill="white"] {
+  fill: hsl(var(--background)) !important;
+}
+
+/* AGGRESSIVE FIX for drag preview white background in dark mode */
+.dark .djs-drag-group *,
+.dark .djs-create-group *,
+.dark .djs-dragger * {
+  background-color: transparent !important;
+}
+
+.dark .djs-drag-group rect,
+.dark .djs-create-group rect,
+.dark .djs-dragger rect {
+  fill: #1f2937 !important;
+}
+
+.dark .djs-drag-group rect[fill="white"],
+.dark .djs-create-group rect[fill="white"],
+.dark .djs-dragger rect[fill="white"],
+.dark .djs-drag-group rect[fill="#fff"],
+.dark .djs-create-group rect[fill="#fff"],
+.dark .djs-dragger rect[fill="#fff"],
+.dark .djs-drag-group rect[fill="#ffffff"],
+.dark .djs-create-group rect[fill="#ffffff"],
+.dark .djs-dragger rect[fill="#ffffff"] {
+  fill: #1f2937 !important;
+}
+
+/* Override any inline white fills during drag */
+.dark .djs-dragging rect[style*="fill: white"],
+.dark .djs-dragging rect[style*="fill:white"],
+.dark .djs-dragging rect[style*="fill:#fff"],
+.dark .djs-dragging rect[style*="fill: #fff"],
+.dark .djs-drag-group rect[style*="fill: white"],
+.dark .djs-drag-group rect[style*="fill:white"] {
+  fill: #1f2937 !important;
+}
+
+/* Target the actual shape elements during creation */
+.djs-shape.djs-element .djs-visual rect,
+.djs-shape.djs-element .djs-visual path {
+  fill: inherit;
+}
+
+.dark .djs-shape.djs-element .djs-visual rect[fill="white"],
+.dark .djs-shape.djs-element .djs-visual path[fill="white"] {
+  fill: hsl(var(--background)) !important;
+}
+
+/* Override any white backgrounds in BPMN elements */
+.djs-element rect[fill="white"],
+.djs-element rect[fill="#ffffff"],
+.djs-element rect[fill="#FFFFFF"],
+.djs-element rect[fill="#fff"],
+.djs-element rect[fill="#FFF"] {
+  fill: hsl(var(--background)) !important;
+}
+
+.dark .djs-element rect[fill="white"],
+.dark .djs-element rect[fill="#ffffff"],
+.dark .djs-element rect[fill="#FFFFFF"],
+.dark .djs-element rect[fill="#fff"],
+.dark .djs-element rect[fill="#FFF"] {
+  fill: hsl(var(--background)) !important;
+}
+
+/* Fix any white rectangles during element creation */
+.djs-overlay-container rect[fill="white"],
+.djs-overlay-container rect[fill="#ffffff"],
+.djs-overlay-container rect[fill="#FFFFFF"] {
+  fill: hsl(var(--background)) !important;
+}
+
+.dark .djs-overlay-container rect[fill="white"],
+.dark .djs-overlay-container rect[fill="#ffffff"],
+.dark .djs-overlay-container rect[fill="#FFFFFF"] {
+  fill: hsl(var(--background)) !important;
+}
+
+/* Touch-friendly hit areas */
+@media (pointer: coarse) {
+  .djs-hit {
+    stroke-width: 25px;
+  }
+  
+  .bpmn-entry {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Ultimate override for BPMN.js hit areas - force transparency in all cases */
+.djs-container svg rect[class*="djs-hit"],
+.djs-container svg path[class*="djs-hit"],
+.djs-container svg polyline[class*="djs-hit"],
+.djs-container svg circle[class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: none !important;
+  fill-opacity: 0 !important;
+}
+
+/* Override inline styles with white stroke */
+svg rect[style*="stroke: white"][class*="djs-hit"],
+svg path[style*="stroke: white"][class*="djs-hit"],
+svg rect[style*="stroke:white"][class*="djs-hit"],
+svg path[style*="stroke:white"][class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+}
+
+/* Specific override for dark mode to combat any theme-specific issues */
+.dark .djs-container svg rect[class*="djs-hit"],
+.dark .djs-container svg path[class*="djs-hit"],
+.dark .djs-container svg polyline[class*="djs-hit"],
+.dark .djs-container svg circle[class*="djs-hit"],
+.dark svg rect[style*="stroke: white"][class*="djs-hit"],
+.dark svg path[style*="stroke: white"][class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: none !important;
+  fill-opacity: 0 !important;
+}
+
+/* Most aggressive rule - target any element with djs-hit class regardless of context */
+[class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: none !important;
+  fill-opacity: 0 !important;
+}
+
+/* Ensure Groups never obstruct visibility of inner elements but remain visible */
+.djs-group .djs-hit,
+.djs-group .djs-hit-stroke,
+[data-element-id*="Group"] .djs-hit,
+[data-element-id*="Group"] .djs-hit-stroke {
+  pointer-events: stroke !important;
+  stroke: transparent !important;
+  fill: transparent !important;
+}
+
+/* Ensure Group visual elements remain visible */
+.djs-group .djs-visual,
+[data-element-id*="Group"] .djs-visual {
+  pointer-events: none !important;
+  opacity: 1 !important;
+}
+
+/* ULTIMATE OVERRIDE - Use attribute selectors to override inline styles */
+rect[style*="stroke: white"],
+rect[style*="stroke:white"],
+rect[style*="stroke:#fff"],
+rect[style*="stroke:#ffffff"],
+rect[style*="stroke: #fff"],
+rect[style*="stroke: #ffffff"],
+path[style*="stroke: white"],
+path[style*="stroke:white"],
+polyline[style*="stroke: white"],
+polyline[style*="stroke:white"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+}
+
+/* Target specifically djs-hit elements with any stroke style */
+rect.djs-hit[style],
+rect.djs-hit-stroke[style],
+rect.djs-hit-all[style],
+path.djs-hit[style],
+path.djs-hit-stroke[style],
+polyline.djs-hit[style] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: transparent !important;
+  fill-opacity: 0 !important;
+}
+
+/* Dark mode specific - even more aggressive */
+.dark rect[class*="djs-hit"],
+body.dark rect[class*="djs-hit"],
+html.dark rect[class*="djs-hit"],
+.dark path[class*="djs-hit"],
+body.dark path[class*="djs-hit"],
+html.dark path[class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: transparent !important;
+  fill-opacity: 0 !important;
+}
+
+/* Dark mode specific fix for Groups - ensure complete transparency */
+.dark .djs-group rect.djs-hit,
+.dark .djs-group rect.djs-hit-stroke,
+.dark .djs-group rect.djs-hit-all,
+.dark [data-element-id*="Group"] rect.djs-hit,
+.dark [data-element-id*="Group"] rect.djs-hit-stroke,
+.dark .djs-element.djs-group rect[class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: transparent !important;
+  fill-opacity: 0 !important;
+}
+
+/* Dark mode visual for Groups - MUST BE VISIBLE with white dashed border */
+.dark .djs-group .djs-visual > rect,
+.dark [data-element-id*="Group"] .djs-visual > rect,
+.dark .djs-element.djs-shape[data-element-id*="Group"] .djs-visual > rect {
+  fill: transparent !important;
+  fill-opacity: 0 !important;
+  stroke: white !important; /* White border in dark mode */
+  stroke-opacity: 0.7 !important;
+  stroke-dasharray: 5, 5 !important;
+  stroke-width: 2px !important;
+  stroke-linecap: round !important;
+}
+
+/* Override inline styles for Groups in dark mode - more aggressive */
+.dark rect[style*="stroke: white"][class*="djs-hit"],
+.dark rect[style*="stroke:white"][class*="djs-hit"],
+.dark rect[style*="stroke: #fff"][class*="djs-hit"],
+.dark rect[style*="stroke:#fff"][class*="djs-hit"],
+.dark .djs-group rect[style*="stroke"],
+.dark [data-element-id*="Group"] rect[style*="stroke"],
+body.dark [data-element-id*="Group"] rect[class*="djs-hit"],
+html.dark [data-element-id*="Group"] rect[class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: transparent !important;
+  fill-opacity: 0 !important;
+}
+
+/* Target BPMN container specifically */
+.bpmn-canvas rect[class*="djs-hit"],
+.bpmn-canvas path[class*="djs-hit"],
+.djs-container rect[class*="djs-hit"],
+.djs-container path[class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: transparent !important;
+  fill-opacity: 0 !important;
+}
+
+/* Fix Group elements specifically - they must be completely transparent */
+.djs-group rect[class*="djs-hit"],
+.djs-element.djs-group rect[class*="djs-hit"],
+[data-element-id*="Group"] rect[class*="djs-hit"],
+.djs-group .djs-hit,
+.djs-group .djs-hit-stroke,
+.djs-group .djs-hit-all {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: none !important;
+  fill-opacity: 0 !important;
+  pointer-events: stroke !important; /* Allow clicks but maintain transparency */
+}
+
+/* Override any inline styles on Group hit areas */
+.djs-group rect[style*="stroke: white"],
+.djs-group rect[style*="stroke:white"],
+.djs-group rect[style*="stroke:#fff"],
+[data-element-id*="Group"] rect[style*="stroke: white"],
+[data-element-id*="Group"] rect[style*="stroke:white"],
+[data-element-id*="Group"] .djs-hit-stroke {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: transparent !important;
+  fill-opacity: 0 !important;
+}
+
+/* Ensure Group visual elements don't block inner content */
+.djs-group .djs-visual,
+[data-element-id*="Group"] .djs-visual {
+  pointer-events: none !important;
+}
+
+.djs-group .djs-visual > rect,
+[data-element-id*="Group"] .djs-visual > rect {
+  fill: none !important;
+  fill-opacity: 0 !important;
+  stroke: rgba(64, 64, 64, 0.7) !important; /* Darker gray border in light mode */
+  stroke-opacity: 1 !important;
+  stroke-dasharray: 5, 5 !important;
+  stroke-width: 2px !important;
+  stroke-linecap: round !important;
+}
+
+/* Minimap styles */
+.djs-minimap {
+  background: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Style the minimap close button with an X */
+.djs-minimap .toggle {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.djs-minimap .toggle:hover {
+  opacity: 1;
+  background: hsl(var(--accent));
+}
+
+/* Add X icon using pseudo-element */
+.djs-minimap .toggle::before,
+.djs-minimap .toggle::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 2px;
+  background: hsl(var(--foreground));
+  border-radius: 1px;
+}
+
+.djs-minimap .toggle::before {
+  transform: rotate(45deg);
+}
+
+.djs-minimap .toggle::after {
+  transform: rotate(-45deg);
+}
+
+/* Dark mode adjustments for minimap */
+.dark .djs-minimap {
+  background: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .djs-minimap .toggle {
+  background: hsl(var(--background));
+  border-color: hsl(var(--border));
+}
+
+.dark .djs-minimap .toggle:hover {
+  background: hsl(var(--accent));
+}
+
+/* Palette Popover Styles */
+.bpmn-palette-popover {
+  animation: popover-in 0.2s ease-out;
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.bpmn-palette:not(.w-64):hover {
+  background-color: hsl(var(--accent) / 0.1);
+  transition: background-color 0.2s;
+}
+
+/* Minimap positioning - bottom right corner */
+.djs-minimap.open {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  left: auto;
+  top: auto;
+  width: 320px;
+  height: 180px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  z-index: 100;
+}
+
+.djs-minimap .map {
+  border-radius: 8px;
+}
+
+.djs-minimap .toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.djs-minimap .toggle:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Viewport indicator styling */
+.djs-minimap .viewport {
+  stroke: #3b82f6;
+  stroke-width: 2px;
+  fill: rgba(59, 130, 246, 0.1);
+}
+
+/* Dark mode minimap adjustments */
+.dark .djs-minimap {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+}
+
+.dark .djs-minimap .toggle {
+  background: rgba(30, 41, 59, 0.9);
+  color: hsl(var(--foreground));
+}
+
+.dark .djs-minimap .toggle:hover {
+  background: rgba(30, 41, 59, 1);
+}
+
+/* Light mode BPMN styles */
+.djs-palette {
+  @apply bg-card border-border shadow-md;
+}
+
+/* Override any BPMN.js zoom effects on palette */
+.djs-palette-entries,
+.djs-palette-entry {
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.djs-context-pad {
+  @apply bg-card border-border shadow-lg;
+}
+
+.djs-popup {
+  @apply bg-popover border-border shadow-lg;
+}
+
+/* Dark mode BPMN styles */
+.dark .djs-container {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.dark .djs-palette {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+}
+
+.dark .djs-palette-entries {
+  color: hsl(var(--card-foreground));
+}
+
+.dark .djs-palette-entry {
+  color: hsl(var(--card-foreground));
+}
+
+.dark .djs-palette-entry:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.dark .djs-context-pad {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.dark .djs-context-pad .entry {
+  color: hsl(var(--card-foreground));
+}
+
+.dark .djs-context-pad .entry:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.dark .djs-popup {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
+  color: hsl(var(--popover-foreground));
+}
+
+.dark .djs-popup-header {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  border-bottom-color: hsl(var(--border));
+}
+
+.dark .djs-popup-body {
+  color: hsl(var(--popover-foreground));
+}
+
+/* BPMN diagram elements dark mode */
+.dark .djs-element .djs-visual > * {
+  stroke: hsl(var(--foreground));
+}
+
+.dark .djs-element .djs-visual > rect,
+.dark .djs-element .djs-visual > circle,
+.dark .djs-element .djs-visual > ellipse,
+.dark .djs-element .djs-visual > polygon,
+.dark .djs-element .djs-visual > path {
+  fill: hsl(var(--card));
+  stroke: hsl(var(--foreground) / 0.8);
+  stroke-width: 2px;
+}
+
+/* Better contrast for BPMN elements in dark mode */
+/* Task elements - need proper dark mode styling with SOLID borders */
+.dark [data-element-type="bpmn:Task"] .djs-visual > rect,
+.dark [data-element-type="bpmn:UserTask"] .djs-visual > rect,
+.dark [data-element-type="bpmn:ServiceTask"] .djs-visual > rect,
+.dark [data-element-type="bpmn:ScriptTask"] .djs-visual > rect,
+.dark [data-element-type="bpmn:BusinessRuleTask"] .djs-visual > rect,
+.dark [data-element-type="bpmn:ManualTask"] .djs-visual > rect,
+.dark [data-element-type="bpmn:SendTask"] .djs-visual > rect,
+.dark [data-element-type="bpmn:ReceiveTask"] .djs-visual > rect,
+.dark [data-element-type="bpmn:CallActivity"] .djs-visual > rect,
+.dark [data-element-type="bpmn:SubProcess"] .djs-visual > rect {
+  fill: #374151 !important; /* Dark gray background */
+  stroke: #e5e7eb !important; /* Much lighter gray border for visibility */
+  stroke-width: 2px !important;
+  stroke-dasharray: none !important; /* Ensure solid line */
+  stroke-linecap: square !important;
+  stroke-linejoin: miter !important;
+  stroke-opacity: 1 !important;
+}
+
+/* Task text in dark mode */
+.dark [data-element-type*="Task"] text,
+.dark [data-element-type*="Task"] .djs-label,
+.dark [data-element-type="bpmn:SubProcess"] text,
+.dark [data-element-type="bpmn:SubProcess"] .djs-label {
+  fill: #f3f4f6 !important; /* Light text */
+  color: #f3f4f6 !important;
+}
+
+/* Additional selector for Task borders - using class selector */
+.dark .djs-element[data-element-type*="Task"] rect,
+.dark .djs-shape[data-element-type*="Task"] rect,
+.dark g[data-element-type*="Task"] .djs-visual rect {
+  stroke: #e5e7eb !important; /* Light gray border */
+  stroke-width: 2px !important;
+  stroke-dasharray: 0 !important; /* Force solid line */
+  stroke-opacity: 1 !important;
+}
+
+/* Task icons in dark mode */
+.dark [data-element-type="bpmn:UserTask"] path,
+.dark [data-element-type="bpmn:ServiceTask"] path,
+.dark [data-element-type="bpmn:ScriptTask"] path,
+.dark [data-element-type="bpmn:BusinessRuleTask"] path,
+.dark [data-element-type="bpmn:ManualTask"] path,
+.dark [data-element-type="bpmn:SendTask"] path,
+.dark [data-element-type="bpmn:ReceiveTask"] path {
+  fill: #d1d5db !important; /* Light gray icons */
+  stroke: #d1d5db !important;
+}
+
+/* Gateway elements in dark mode */
+.dark [data-element-type*="Gateway"] .djs-visual > polygon,
+.dark [data-element-type*="Gateway"] .djs-visual > path {
+  fill: #4b5563 !important; /* Medium gray background */
+  stroke: #9ca3af !important; /* Light gray border */
+  stroke-width: 2px !important;
+}
+
+/* Gateway markers/icons in dark mode */
+.dark [data-element-type*="Gateway"] .djs-visual > path:not(:first-child) {
+  fill: #d1d5db !important; /* Light gray for icons */
+  stroke: #d1d5db !important;
+}
+
+/* Event elements in dark mode */
+.dark [data-element-type*="Event"] .djs-visual > circle,
+.dark [data-element-type*="Event"] .djs-visual > ellipse {
+  fill: #1f2937 !important; /* Dark background */
+  stroke: #9ca3af !important; /* Light gray border */
+  stroke-width: 2px !important;
+}
+
+/* Start Events - green tint */
+.dark [data-element-type*="StartEvent"] .djs-visual > circle {
+  stroke: #10b981 !important; /* Green border */
+}
+
+/* End Events - red tint */
+.dark [data-element-type*="EndEvent"] .djs-visual > circle {
+  stroke: #ef4444 !important; /* Red border */
+  stroke-width: 3px !important;
+}
+
+/* Intermediate Events - amber tint */
+.dark [data-element-type*="IntermediateThrowEvent"] .djs-visual > circle,
+.dark [data-element-type*="IntermediateCatchEvent"] .djs-visual > circle,
+.dark [data-element-type*="BoundaryEvent"] .djs-visual > circle {
+  stroke: #f59e0b !important; /* Amber border */
+}
+
+/* Event inner icons in dark mode */
+.dark [data-element-type*="Event"] .djs-visual > path,
+.dark [data-element-type*="Event"] .djs-visual > polygon,
+.dark [data-element-type*="Event"] .djs-visual > rect {
+  fill: #d1d5db !important; /* Light gray for icons */
+  stroke: #d1d5db !important;
+}
+
+/* Data Objects in dark mode */
+.dark [data-element-type*="DataObject"] .djs-visual > path,
+.dark [data-element-type*="DataObject"] .djs-visual > rect,
+.dark [data-element-type*="DataStore"] .djs-visual > path,
+.dark [data-element-type*="DataStore"] .djs-visual > rect,
+.dark [data-element-type*="DataInput"] .djs-visual > path,
+.dark [data-element-type*="DataOutput"] .djs-visual > path {
+  fill: #374151 !important; /* Dark gray background */
+  stroke: #9ca3af !important; /* Light gray border */
+  stroke-width: 1.5px !important;
+}
+
+/* Pools and Lanes in dark mode */
+.dark [data-element-type="bpmn:Participant"] .djs-visual > rect,
+.dark [data-element-type="bpmn:Lane"] .djs-visual > rect {
+  fill: #1f2937 !important; /* Very dark background */
+  stroke: #6b7280 !important; /* Gray border */
+  stroke-width: 2px !important;
+}
+
+/* Pool/Lane headers in dark mode */
+.dark [data-element-type="bpmn:Participant"] text,
+.dark [data-element-type="bpmn:Lane"] text {
+  fill: #e5e7eb !important; /* Light gray text */
+}
+
+/* Text Annotations in dark mode */
+.dark [data-element-type="bpmn:TextAnnotation"] .djs-visual > rect {
+  fill: transparent !important;
+  stroke: #6b7280 !important;
+  stroke-width: 1px !important;
+  stroke-dasharray: 3, 3 !important;
+}
+
+.dark [data-element-type="bpmn:TextAnnotation"] text {
+  fill: #e5e7eb !important;
+}
+
+/* BPMN text elements - ensure ALL text is visible */
+.dark .djs-element .djs-label,
+.dark .djs-label text {
+  fill: #f3f4f6 !important;
+  color: #f3f4f6 !important;
+}
+
+.dark .djs-element text,
+.dark .djs-direct-editing-content,
+.dark .djs-direct-editing-parent {
+  fill: #f3f4f6 !important;
+  color: #f3f4f6 !important;
+}
+
+/* BPMN connection lines and arrows in dark mode */
+.dark .djs-connection .djs-visual > path {
+  stroke: #9ca3af !important; /* Light gray lines */
+  stroke-width: 2px !important;
+}
+
+.dark .djs-connection .djs-visual > polyline {
+  stroke: #9ca3af !important;
+  fill: #9ca3af !important; /* For arrowheads */
+}
+
+.dark .djs-connection marker path,
+.dark .djs-connection marker polyline {
+  fill: #9ca3af !important;
+  stroke: #9ca3af !important;
+}
+
+/* Selected elements in dark mode */
+.dark .djs-element.selected .djs-outline {
+  stroke: #3b82f6 !important; /* Blue selection */
+  stroke-width: 2px !important;
+}
+
+.dark .djs-connection.selected .djs-visual > path {
+  stroke: #3b82f6 !important; /* Blue selection */
+}
+
+/* Selection handles in dark mode */
+.dark .djs-resizer-visual,
+.dark .djs-resize-overlay {
+  stroke: #3b82f6 !important;
+  fill: #1e40af !important;
+  fill-opacity: 0.2 !important;
+}
+
+.dark .djs-bendpoint {
+  fill: #3b82f6 !important;
+}
+
+/* Hover effects in dark mode */
+.dark .djs-element.hover .djs-outline {
+  stroke: #60a5fa !important; /* Light blue hover */
+  stroke-width: 2px !important;
+  stroke-opacity: 0.6 !important;
+}
+
+.dark .djs-connection.hover .djs-visual > path {
+  stroke: #60a5fa !important;
+  stroke-width: 3px !important;
+}
+
+/* Canvas background in dark mode */
+.dark .djs-container {
+  background-color: #111827 !important; /* Very dark background */
+}
+
+.dark .djs-container svg {
+  background-color: #111827 !important;
+}
+
+/* AGGRESSIVE FIX: Force all Task rectangles to have visible solid borders in dark mode */
+.dark rect[stroke="#000000"],
+.dark rect[stroke="black"],
+.dark rect[stroke="#000"],
+.dark rect[stroke="rgb(0, 0, 0)"],
+.dark rect[stroke="rgb(0,0,0)"] {
+  stroke: #e5e7eb !important; /* Light gray for visibility */
+  stroke-width: 2px !important;
+  stroke-dasharray: 0 0 !important; /* Force continuous line */
+}
+
+/* Fix any task that might have inherited wrong stroke */
+.dark .djs-visual rect {
+  stroke-dasharray: 0 0 !important; /* Force continuous line */
+}
+
+/* Ensure SubProcess has solid borders too */
+.dark [data-element-type="bpmn:SubProcess"] rect {
+  stroke: #e5e7eb !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: 0 0 !important; /* Continuous line */
+  rx: 10 !important; /* Rounded corners for subprocess */
+}
+
+/* Minimap dark mode */
+.dark .djs-minimap {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.dark .djs-minimap .djs-minimap-canvas {
+  background-color: hsl(var(--muted));
+}
+
+/* Grid background for dark mode */
+.dark .djs-container .djs-grid-bg {
+  background-color: hsl(var(--background));
+}
+
+/* Palette icons dark mode */
+.dark .djs-palette-entry > *,
+.dark .djs-context-pad .entry > * {
+  color: hsl(var(--card-foreground));
+  fill: hsl(var(--card-foreground));
+}
+
+/* Specific BPMN icon classes for dark mode */
+.dark .djs-context-pad .entry.bpmn-icon-end-event-none,
+.dark .djs-context-pad .entry.bpmn-icon-gateway-none,
+.dark .djs-context-pad .entry.bpmn-icon-task,
+.dark .djs-context-pad .entry.bpmn-icon-intermediate-event-none,
+.dark .djs-context-pad .entry.bpmn-icon-text-annotation,
+.dark .djs-context-pad .entry.bpmn-icon-screw-wrench,
+.dark .djs-context-pad .entry.bpmn-icon-trash,
+.dark .djs-context-pad .entry.bpmn-icon-connection-multi,
+.dark .djs-palette-entry.bpmn-icon-start-event-none,
+.dark .djs-palette-entry.bpmn-icon-create-task,
+.dark .djs-palette-entry.bpmn-icon-create-data-object,
+.dark .djs-palette-entry.bpmn-icon-create-data-store,
+.dark .djs-palette-entry.bpmn-icon-create-subprocess-expanded,
+.dark .djs-palette-entry.bpmn-icon-create-participant-expanded {
+  color: hsl(var(--card-foreground)) !important;
+  background-color: transparent !important;
+}
+
+/* BPMN icon pseudo-elements for dark mode */
+.dark .djs-context-pad .entry::before,
+.dark .djs-palette-entry::before {
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* Force icon color inheritance */
+.dark .djs-context-pad .entry[class*="bpmn-icon"]::before,
+.dark .djs-palette-entry[class*="bpmn-icon"]::before {
+  color: inherit !important;
+}
+
+/* Comprehensive BPMN icon font styling for dark mode */
+.dark [class*="bpmn-icon"]::before {
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* Additional BPMN font icons */
+.dark .bpmn-icon-start-event-none::before,
+.dark .bpmn-icon-end-event-none::before,
+.dark .bpmn-icon-intermediate-event-none::before,
+.dark .bpmn-icon-activity::before,
+.dark .bpmn-icon-gateway-none::before,
+.dark .bpmn-icon-gateway-exclusive::before,
+.dark .bpmn-icon-gateway-parallel::before,
+.dark .bpmn-icon-task::before,
+.dark .bpmn-icon-user-task::before,
+.dark .bpmn-icon-service-task::before,
+.dark .bpmn-icon-script-task::before,
+.dark .bpmn-icon-business-rule-task::before,
+.dark .bpmn-icon-manual-task::before,
+.dark .bpmn-icon-receive-task::before,
+.dark .bpmn-icon-send-task::before,
+.dark .bpmn-icon-subprocess-expanded::before,
+.dark .bpmn-icon-subprocess-collapsed::before,
+.dark .bpmn-icon-text-annotation::before,
+.dark .bpmn-icon-screw-wrench::before,
+.dark .bpmn-icon-trash::before,
+.dark .bpmn-icon-connection-multi::before,
+.dark .bpmn-icon-create-task::before,
+.dark .bpmn-icon-create-data-object::before,
+.dark .bpmn-icon-create-data-store::before,
+.dark .bpmn-icon-create-subprocess-expanded::before,
+.dark .bpmn-icon-create-participant-expanded::before,
+.dark .bpmn-icon-hand-tool::before,
+.dark .bpmn-icon-lasso-tool::before,
+.dark .bpmn-icon-space-tool::before,
+.dark .bpmn-icon-data-object::before,
+.dark .bpmn-icon-data-store::before,
+.dark .bpmn-icon-participant::before,
+.dark .bpmn-icon-group::before {
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* Ensure proper theme inheritance */
+.bpmn-designer-theme-dark .djs-container {
+  background-color: hsl(var(--background));
+}
+
+.bpmn-designer-theme-light .djs-container {
+  background-color: #ffffff;
+}
+
+/* Force hit areas to be transparent in BPMN designer dark theme */
+.bpmn-designer-theme-dark rect.djs-hit,
+.bpmn-designer-theme-dark rect.djs-hit-all,
+.bpmn-designer-theme-dark rect.djs-hit-stroke,
+.bpmn-designer-theme-dark path.djs-hit,
+.bpmn-designer-theme-dark polyline.djs-hit {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: none !important;
+}
+
+/* Also handle any SVG element with djs-hit class */
+.bpmn-designer-theme-dark svg *[class*="djs-hit"] {
+  stroke: transparent !important;
+  stroke-opacity: 0 !important;
+  fill: none !important;
+}
+
+/* Additional dark mode fixes for BPMN icons and symbols */
+.dark .bpmn-icon-start-event-none,
+.dark .bpmn-icon-end-event-none,
+.dark .bpmn-icon-intermediate-event-none,
+.dark .bpmn-icon-activity,
+.dark .bpmn-icon-gateway-none,
+.dark .bpmn-icon-gateway-exclusive,
+.dark .bpmn-icon-gateway-parallel,
+.dark .bpmn-icon-user-task,
+.dark .bpmn-icon-service-task,
+.dark .bpmn-icon-script-task,
+.dark .bpmn-icon-business-rule-task,
+.dark .bpmn-icon-manual-task,
+.dark .bpmn-icon-receive-task,
+.dark .bpmn-icon-send-task,
+.dark .bpmn-icon-subprocess-expanded,
+.dark .bpmn-icon-subprocess-collapsed {
+  color: hsl(var(--foreground)) !important;
+  fill: hsl(var(--foreground)) !important;
+}
+
+/* Dark mode for BPMN element fills */
+.dark .djs-element .djs-visual > rect,
+.dark .djs-element .djs-visual > circle,
+.dark .djs-element .djs-visual > polygon,
+.dark .djs-element .djs-visual > path[fill] {
+  fill: hsl(var(--background)) !important;
+  stroke: hsl(var(--foreground)) !important;
+  stroke-width: 1.5px;
+}
+
+/* Dark mode for BPMN task icons */
+.dark .djs-element[data-element-id] .djs-visual [data-marker] {
+  fill: hsl(var(--foreground)) !important;
+  stroke: hsl(var(--foreground)) !important;
+}
+
+/* Dark mode for sequence flows */
+.dark .djs-connection .djs-visual > path {
+  stroke: hsl(var(--muted-foreground)) !important;
+  stroke-width: 2px;
+}
+
+/* Dark mode for markers (arrow heads) */
+.dark marker path {
+  fill: hsl(var(--muted-foreground)) !important;
+  stroke: hsl(var(--muted-foreground)) !important;
+}
+
+/* Dark mode for BPMN gateway markers */
+.dark .djs-element .djs-visual > path[d*="M"] {
+  stroke: hsl(var(--foreground)) !important;
+  fill: none !important;
+}
+
+/* Dark mode for text and labels */
+.dark .djs-element .djs-label text,
+.dark .djs-connection .djs-label text {
+  fill: hsl(var(--foreground)) !important;
+  stroke: none !important;
+}
+
+/* Improved hover and selection states for dark mode */
+.dark .djs-element.hover .djs-visual > * {
+  stroke: hsl(var(--primary)) !important;
+  filter: brightness(1.2);
+}
+
+.dark .djs-element.selected .djs-visual > * {
+  stroke: hsl(var(--primary)) !important;
+  stroke-width: 3px !important;
+}
+
+.dark .djs-connection.selected .djs-visual > * {
+  stroke: hsl(var(--primary)) !important;
+  stroke-width: 3px !important;
+}

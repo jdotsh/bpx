@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Selection Visibility Test</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1f2937;
+        }
+        
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .fix-details {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .fix-details h3 {
+            margin-top: 0;
+            color: #14532d;
+        }
+        
+        .test-steps {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .test-steps h3 {
+            margin-top: 0;
+            color: #78350f;
+        }
+        
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .shortcut {
+            padding: 10px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+        
+        .shortcut kbd {
+            padding: 2px 6px;
+            background: #1f2937;
+            color: white;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .visual-guide {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .visual-box {
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .visual-box.light {
+            background: #f9fafb;
+            border: 2px dashed #2563eb;
+        }
+        
+        .visual-box.dark {
+            background: #111827;
+            border: 2px dashed #60a5fa;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>✨ Selection Visibility Test</h1>
+    
+    <div class="info">
+        <h2>Problem Fixed</h2>
+        <p>When selecting elements with <kbd>Ctrl</kbd>+<kbd>A</kbd> or drag selection, the selection overlay had an opaque background that hid the selected elements.</p>
+        
+        <div class="fix-details">
+            <h3>✅ Fixes Applied:</h3>
+            <ul>
+                <li><strong>Transparent Overlays:</strong> All selection overlays now use transparent backgrounds</li>
+                <li><strong>Visible Outlines:</strong> Selected elements have dashed blue outlines (3px width)</li>
+                <li><strong>Visual Feedback:</strong> Drop shadow effect on selected elements</li>
+                <li><strong>Keyboard Support:</strong> Proper <kbd>Ctrl</kbd>+<kbd>A</kbd> select all functionality</li>
+                <li><strong>Theme-aware Colors:</strong> Different selection colors for light/dark modes</li>
+            </ul>
+        </div>
+        
+        <div class="visual-guide">
+            <div class="visual-box light">
+                <h4>Light Mode Selection</h4>
+                <ul>
+                    <li>Outline: Blue (#2563eb)</li>
+                    <li>Background: 10% opacity blue</li>
+                    <li>Dashed border (5px dash)</li>
+                </ul>
+            </div>
+            <div class="visual-box dark">
+                <h4>Dark Mode Selection</h4>
+                <ul>
+                    <li>Outline: Light Blue (#60a5fa)</li>
+                    <li>Background: 10% opacity blue</li>
+                    <li>Dashed border (5px dash)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="test-steps">
+            <h3>🧪 Test Steps:</h3>
+            <ol>
+                <li>Create several BPMN elements on the canvas</li>
+                <li>Press <kbd>Ctrl</kbd>+<kbd>A</kbd> (or <kbd>Cmd</kbd>+<kbd>A</kbd> on Mac) to select all</li>
+                <li>✅ You should see ALL elements with blue dashed outlines</li>
+                <li>✅ Elements should remain visible (not hidden by overlay)</li>
+                <li>Try drag selection (click and drag to create selection box)</li>
+                <li>✅ Selection box should be transparent with blue border</li>
+                <li>Toggle dark mode and repeat - selection should still be visible</li>
+            </ol>
+        </div>
+        
+        <div class="keyboard-shortcuts">
+            <div class="shortcut">
+                <strong>Select All:</strong> <kbd>Ctrl</kbd>+<kbd>A</kbd>
+            </div>
+            <div class="shortcut">
+                <strong>Drag Select:</strong> Click + Drag
+            </div>
+            <div class="shortcut">
+                <strong>Multi-select:</strong> <kbd>Shift</kbd>+Click
+            </div>
+            <div class="shortcut">
+                <strong>Add to selection:</strong> <kbd>Ctrl</kbd>+Click
+            </div>
+        </div>
+        
+        <div style="background: #dcfce7; padding: 15px; border-radius: 6px; margin-top: 20px;">
+            <strong>✅ Expected Results:</strong>
+            <ul style="margin: 10px 0;">
+                <li>Selection overlay is <strong>transparent</strong> (can see elements through it)</li>
+                <li>Selected elements have <strong>blue dashed outline</strong></li>
+                <li>Resize handles visible on selected elements</li>
+                <li>Drop shadow effect on selected elements</li>
+                <li>Works in both light and dark modes</li>
+                <li><kbd>Ctrl</kbd>+<kbd>A</kbd> selects all elements (except labels and flows)</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="toggleTheme()">🌓 Toggle Theme</button>
+        <button onclick="selectAll()">📦 Select All (Ctrl+A)</button>
+        <button onclick="checkSelection()">🔍 Check Selection</button>
+        <button onclick="createTestElements()">➕ Create Test Elements</button>
+    </div>
+    
+    <iframe src="http://localhost:3000/studio" id="studio-frame"></iframe>
+    
+    <script>
+        function toggleTheme() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const themeBtn = iframeDoc.querySelector('[title="Toggle Theme"]');
+                
+                if (themeBtn) {
+                    themeBtn.click();
+                    console.log('Theme toggled');
+                } else {
+                    alert('Theme button not found. Make sure the studio is loaded.');
+                }
+            } catch (e) {
+                console.error('Cannot access iframe:', e);
+                alert('Cannot access studio. Check console for details.');
+            }
+        }
+        
+        function selectAll() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeWindow = iframe.contentWindow;
+                
+                // Trigger Ctrl+A in the iframe
+                const event = new KeyboardEvent('keydown', {
+                    key: 'a',
+                    code: 'KeyA',
+                    ctrlKey: true,
+                    bubbles: true
+                });
+                
+                iframeWindow.document.dispatchEvent(event);
+                console.log('Triggered Select All (Ctrl+A)');
+                
+                // Check selection after a delay
+                setTimeout(checkSelection, 500);
+                
+            } catch (e) {
+                console.error('Cannot trigger select all:', e);
+                alert('Cannot trigger select all. Try pressing Ctrl+A directly in the studio.');
+            }
+        }
+        
+        function checkSelection() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Check for selection visuals
+                const outlines = iframeDoc.querySelectorAll('.djs-outline');
+                const selectedElements = iframeDoc.querySelectorAll('.selected');
+                const overlays = iframeDoc.querySelectorAll('.djs-overlay');
+                
+                let report = 'Selection Check:\n\n';
+                report += `• Outline elements: ${outlines.length}\n`;
+                report += `• Selected elements: ${selectedElements.length}\n`;
+                report += `• Overlay elements: ${overlays.length}\n\n`;
+                
+                // Check overlay transparency
+                let transparentCount = 0;
+                let opaqueCount = 0;
+                
+                overlays.forEach(overlay => {
+                    const bg = window.getComputedStyle(overlay).backgroundColor;
+                    const opacity = window.getComputedStyle(overlay).opacity;
+                    
+                    if (bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)' || 
+                        bg.includes('rgba') && bg.includes('0)')) {
+                        transparentCount++;
+                    } else {
+                        opaqueCount++;
+                    }
+                });
+                
+                report += `Overlay Transparency:\n`;
+                report += `• Transparent: ${transparentCount}\n`;
+                report += `• Opaque: ${opaqueCount}\n\n`;
+                
+                // Check outline visibility
+                if (outlines.length > 0) {
+                    const firstOutline = outlines[0];
+                    const stroke = window.getComputedStyle(firstOutline).stroke;
+                    const strokeWidth = window.getComputedStyle(firstOutline).strokeWidth;
+                    const strokeDasharray = window.getComputedStyle(firstOutline).strokeDasharray;
+                    
+                    report += `Outline Style:\n`;
+                    report += `• Stroke color: ${stroke}\n`;
+                    report += `• Stroke width: ${strokeWidth}\n`;
+                    report += `• Dash pattern: ${strokeDasharray}\n`;
+                }
+                
+                alert(report);
+                console.log('Selection check:', {
+                    outlines: outlines.length,
+                    selected: selectedElements.length,
+                    overlays: overlays.length,
+                    transparent: transparentCount,
+                    opaque: opaqueCount
+                });
+                
+            } catch (e) {
+                console.error('Cannot check selection:', e);
+                alert('Cannot check selection. See console for details.');
+            }
+        }
+        
+        function createTestElements() {
+            alert('To test selection visibility:\n\n' +
+                  '1. Drag some elements from the palette onto the canvas\n' +
+                  '2. Press Ctrl+A to select all\n' +
+                  '3. You should see blue dashed outlines around all elements\n' +
+                  '4. Elements should remain visible (not hidden)\n' +
+                  '5. Try drag selection - the box should be transparent');
+        }
+        
+        console.log('Selection Visibility Test loaded');
+        console.log('This test verifies that selection overlays are transparent');
+        console.log('Press Ctrl+A in the studio to test select all functionality');
+    </script>
+</body>
+</html>

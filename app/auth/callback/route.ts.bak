@@ -1,0 +1,53 @@
+// Auth callback handler for BPMN Studio Web SaaS
+// Release 1 Day 2: Authentication Setup
+
+import { createServerClient, createUserProfile } from '@/lib/auth/server'
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const requestUrl = new URL(request.url)
+  const code = requestUrl.searchParams.get('code')
+  const redirectTo = requestUrl.searchParams.get('redirectTo') || '/dashboard'
+
+  if (code) {
+    const supabase = createServerClient()
+    
+    try {
+      // Exchange code for session
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+      
+      if (error) {
+        console.error('Auth callback error:', error)
+        return NextResponse.redirect(
+          new URL('/auth/signin?error=auth_callback_failed', requestUrl.origin)
+        )
+      }
+
+      if (data.user) {
+        // Check if profile exists, create if not
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', data.user.id)
+          .single()
+
+        if (!existingProfile) {
+          await createUserProfile(data.user)
+        }
+
+        // Redirect to intended destination
+        return NextResponse.redirect(new URL(redirectTo, requestUrl.origin))
+      }
+    } catch (error) {
+      console.error('Auth callback unexpected error:', error)
+      return NextResponse.redirect(
+        new URL('/auth/signin?error=unexpected_error', requestUrl.origin)
+      )
+    }
+  }
+
+  // If no code, redirect to sign in
+  return NextResponse.redirect(
+    new URL('/auth/signin?error=no_auth_code', requestUrl.origin)
+  )
+}

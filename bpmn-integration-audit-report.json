@@ -1,0 +1,123 @@
+{
+  "summary": {
+    "critical": 2,
+    "major": 0,
+    "minor": 3,
+    "findings": 15,
+    "timestamp": "2025-08-19T08:28:54.953Z"
+  },
+  "issues": [
+    {
+      "severity": "critical",
+      "component": "bpmn-canvas.tsx",
+      "message": "3 useEffect hooks but only 1 cleanup functions",
+      "recommendation": "Add cleanup functions to useEffect hooks, especially for BPMN modeler initialization",
+      "timestamp": "2025-08-19T08:28:54.950Z"
+    },
+    {
+      "severity": "critical",
+      "component": "bpmn-studio.tsx",
+      "message": "2 useEffect hooks but only 1 cleanup functions",
+      "recommendation": "Add cleanup functions to useEffect hooks, especially for BPMN modeler initialization",
+      "timestamp": "2025-08-19T08:28:54.951Z"
+    },
+    {
+      "severity": "minor",
+      "component": "custom-palette-provider.ts",
+      "message": "Palette may not properly distinguish tools from elements",
+      "recommendation": "Implement separate handling for tools (hand-tool, lasso-tool) vs elements",
+      "timestamp": "2025-08-19T08:28:54.951Z"
+    },
+    {
+      "severity": "minor",
+      "component": "custom-palette-module.ts",
+      "message": "Palette may not properly distinguish tools from elements",
+      "recommendation": "Implement separate handling for tools (hand-tool, lasso-tool) vs elements",
+      "timestamp": "2025-08-19T08:28:54.952Z"
+    },
+    {
+      "severity": "minor",
+      "component": "Auto-save",
+      "message": "Auto-save may not be optimized",
+      "recommendation": "Consider debouncing auto-save to prevent excessive API calls",
+      "timestamp": "2025-08-19T08:28:54.952Z"
+    }
+  ],
+  "findings": [
+    {
+      "category": "Performance",
+      "finding": "Uses async XML export (good for performance)",
+      "timestamp": "2025-08-19T08:28:54.949Z"
+    },
+    {
+      "category": "Performance",
+      "finding": "Uses async XML export (good for performance)",
+      "timestamp": "2025-08-19T08:28:54.950Z"
+    },
+    {
+      "category": "React Patterns",
+      "finding": "Uses refs for DOM manipulation (appropriate for BPMN)",
+      "timestamp": "2025-08-19T08:28:54.950Z"
+    },
+    {
+      "category": "Performance",
+      "finding": "Uses React performance optimizations",
+      "timestamp": "2025-08-19T08:28:54.950Z"
+    },
+    {
+      "category": "State Management",
+      "finding": "Manages BPMN state in React",
+      "timestamp": "2025-08-19T08:28:54.950Z"
+    },
+    {
+      "category": "React Patterns",
+      "finding": "Uses refs for DOM manipulation (appropriate for BPMN)",
+      "timestamp": "2025-08-19T08:28:54.951Z"
+    },
+    {
+      "category": "Performance",
+      "finding": "Uses React performance optimizations",
+      "timestamp": "2025-08-19T08:28:54.951Z"
+    },
+    {
+      "category": "State Management",
+      "finding": "Manages BPMN state in React",
+      "timestamp": "2025-08-19T08:28:54.951Z"
+    },
+    {
+      "category": "Performance",
+      "finding": "Uses React performance optimizations",
+      "timestamp": "2025-08-19T08:28:54.951Z"
+    },
+    {
+      "category": "BPMN Integration",
+      "finding": "Uses proper provider registration pattern",
+      "timestamp": "2025-08-19T08:28:54.951Z"
+    },
+    {
+      "category": "Interaction",
+      "finding": "Implements drag-and-drop functionality",
+      "timestamp": "2025-08-19T08:28:54.952Z"
+    },
+    {
+      "category": "Palette Architecture",
+      "finding": "Distinguishes between tools and elements",
+      "timestamp": "2025-08-19T08:28:54.952Z"
+    },
+    {
+      "category": "Performance",
+      "finding": "Implements virtual rendering for large diagrams",
+      "timestamp": "2025-08-19T08:28:54.952Z"
+    },
+    {
+      "category": "Monitoring",
+      "finding": "Has performance monitoring implementation",
+      "timestamp": "2025-08-19T08:28:54.952Z"
+    },
+    {
+      "category": "Security",
+      "finding": "Uses strict metadata validation",
+      "timestamp": "2025-08-19T08:28:54.953Z"
+    }
+  ]
+}

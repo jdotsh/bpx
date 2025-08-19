@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Entity Visibility Test - Dark Mode</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .test-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .test-info h2 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+        
+        .test-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .check-item {
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .check-item h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .check-item ul {
+            margin: 5px 0;
+            padding-left: 20px;
+            font-size: 13px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status.light {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status.dark {
+            background: #1f2937;
+            color: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 BPMN Entity Visibility Test</h1>
+        <div id="theme-status" style="text-align: center; margin-bottom: 20px;">
+            Current Theme: <span class="status light" id="current-theme">LIGHT MODE</span>
+        </div>
+        
+        <div class="test-info">
+            <h2>✅ Entity Visibility Checklist</h2>
+            <p><strong>Test Instructions:</strong> Create each type of BPMN entity and verify it's visible in both light and dark modes.</p>
+            
+            <div class="test-checklist">
+                <div class="check-item">
+                    <h3>📋 Tasks (Rectangles)</h3>
+                    <ul>
+                        <li>User Task - white border in dark</li>
+                        <li>Service Task - white border in dark</li>
+                        <li>Script Task - white border in dark</li>
+                        <li>Manual Task - white border in dark</li>
+                    </ul>
+                </div>
+                
+                <div class="check-item">
+                    <h3>⭕ Events (Circles)</h3>
+                    <ul>
+                        <li>Start Event - white border in dark</li>
+                        <li>End Event - white border in dark</li>
+                        <li>Intermediate Event - white border in dark</li>
+                        <li>Boundary Event - white border in dark</li>
+                    </ul>
+                </div>
+                
+                <div class="check-item">
+                    <h3>💎 Gateways (Diamonds)</h3>
+                    <ul>
+                        <li>Exclusive Gateway - white border in dark</li>
+                        <li>Parallel Gateway - white border in dark</li>
+                        <li>Inclusive Gateway - white border in dark</li>
+                        <li>Complex Gateway - white border in dark</li>
+                    </ul>
+                </div>
+                
+                <div class="check-item">
+                    <h3>📊 Data Objects</h3>
+                    <ul>
+                        <li>Data Object - white border in dark</li>
+                        <li>Data Store - white border in dark</li>
+                        <li>Data Input - white border in dark</li>
+                        <li>Data Output - white border in dark</li>
+                    </ul>
+                </div>
+                
+                <div class="check-item">
+                    <h3>🏊 Pools & Lanes</h3>
+                    <ul>
+                        <li>Pool - white border in dark</li>
+                        <li>Lane - white border in dark</li>
+                        <li>Participant - white border in dark</li>
+                    </ul>
+                </div>
+                
+                <div class="check-item">
+                    <h3>➡️ Connections</h3>
+                    <ul>
+                        <li>Sequence Flow - white line in dark</li>
+                        <li>Message Flow - white dashed in dark</li>
+                        <li>Association - white dotted in dark</li>
+                        <li>Data Association - white in dark</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="background: #fef3c7; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                <strong>🎯 What to look for:</strong>
+                <ul style="margin: 10px 0 0 0;">
+                    <li><strong>Light Mode:</strong> All entities should have BLACK borders on WHITE background</li>
+                    <li><strong>Dark Mode:</strong> All entities should have WHITE borders on DARK background</li>
+                    <li><strong>Problem:</strong> If any entity "disappears" in dark mode, it means the border is still black</li>
+                    <li><strong>Icons:</strong> Task icons and gateway symbols should also invert (white in dark mode)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="toggleTheme()">🌓 Toggle Theme</button>
+            <button onclick="checkVisibility()">🔍 Check Entity Visibility</button>
+            <button onclick="createTestDiagram()">📝 Create Test Diagram</button>
+            <button onclick="clearCanvas()">🗑️ Clear Canvas</button>
+        </div>
+        
+        <iframe src="http://localhost:3000/studio" id="studio-frame"></iframe>
+    </div>
+    
+    <script>
+        let currentTheme = 'light';
+        
+        function toggleTheme() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const themeBtn = iframeDoc.querySelector('[title="Toggle Theme"]');
+                
+                if (themeBtn) {
+                    themeBtn.click();
+                    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    updateThemeStatus();
+                    
+                    // Check visibility after a short delay
+                    setTimeout(checkVisibility, 500);
+                } else {
+                    alert('Theme button not found. Make sure the studio is loaded.');
+                }
+            } catch (e) {
+                console.error('Cannot access iframe:', e);
+                alert('Cannot access studio. Check console for details.');
+            }
+        }
+        
+        function updateThemeStatus() {
+            const statusEl = document.getElementById('current-theme');
+            statusEl.textContent = currentTheme.toUpperCase() + ' MODE';
+            statusEl.className = 'status ' + currentTheme;
+        }
+        
+        function checkVisibility() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Check all SVG elements
+                const svgElements = iframeDoc.querySelectorAll('.djs-visual > *, .djs-shape rect, .djs-shape circle, .djs-shape polygon, .djs-shape path');
+                let report = `Visibility Check (${currentTheme} mode):\n\n`;
+                
+                const issues = [];
+                svgElements.forEach((el, index) => {
+                    const stroke = window.getComputedStyle(el).stroke;
+                    const fill = window.getComputedStyle(el).fill;
+                    
+                    // Check for visibility issues
+                    if (currentTheme === 'dark') {
+                        if (stroke === 'rgb(0, 0, 0)' || stroke === '#000000') {
+                            issues.push(`Element ${index} (${el.tagName}) has black stroke in dark mode`);
+                        }
+                    } else {
+                        if (stroke === 'rgb(255, 255, 255)' || stroke === '#ffffff') {
+                            issues.push(`Element ${index} (${el.tagName}) has white stroke in light mode`);
+                        }
+                    }
+                });
+                
+                if (issues.length === 0) {
+                    report += '✅ All entities are properly visible!\n';
+                    report += `Found ${svgElements.length} SVG elements, all with correct colors.`;
+                } else {
+                    report += '⚠️ Found visibility issues:\n\n';
+                    issues.forEach(issue => report += '• ' + issue + '\n');
+                }
+                
+                alert(report);
+                console.log('Visibility check:', { 
+                    theme: currentTheme, 
+                    totalElements: svgElements.length, 
+                    issues: issues 
+                });
+                
+            } catch (e) {
+                console.error('Cannot check visibility:', e);
+                alert('Cannot check visibility. See console for details.');
+            }
+        }
+        
+        function createTestDiagram() {
+            alert('Please manually create different types of BPMN elements:\n\n' +
+                  '1. Drag a Task from the palette\n' +
+                  '2. Drag an Event (circle)\n' +
+                  '3. Drag a Gateway (diamond)\n' +
+                  '4. Create connections between them\n\n' +
+                  'Then toggle dark mode to see if they remain visible!');
+        }
+        
+        function clearCanvas() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Try to find and click the clear or new button
+                // This is a placeholder - actual implementation depends on your UI
+                alert('Please use the studio controls to clear the canvas or create a new diagram.');
+                
+            } catch (e) {
+                console.error('Cannot clear canvas:', e);
+            }
+        }
+        
+        // Check initial state
+        window.onload = () => {
+            console.log('Entity visibility test loaded');
+            console.log('Testing comprehensive color inversion for all BPMN entities');
+        };
+    </script>
+</body>
+</html>

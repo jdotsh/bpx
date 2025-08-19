@@ -1,0 +1,125 @@
+{
+  "summary": {
+    "critical": 3,
+    "major": 0,
+    "minor": 2,
+    "passed": 7,
+    "isProductionReady": false,
+    "duration": 19,
+    "timestamp": "2025-08-19T08:27:25.067Z"
+  },
+  "details": {
+    "critical": [
+      {
+        "title": "Environment Variables",
+        "message": "Required environment variables missing",
+        "details": {
+          "missing": [
+            "NEXT_PUBLIC_SUPABASE_URL",
+            "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+            "DATABASE_URL",
+            "DIRECT_URL"
+          ]
+        },
+        "timestamp": "2025-08-19T08:27:05.736Z"
+      },
+      {
+        "title": "TypeScript Compilation",
+        "message": "TypeScript compilation failed",
+        "details": {
+          "errorCount": 0,
+          "errors": ""
+        },
+        "timestamp": "2025-08-19T08:27:07.036Z"
+      },
+      {
+        "title": "Build Process",
+        "message": "Production build failed",
+        "details": {
+          "error": "Command failed: npm run build\n<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (108kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)\n ⚠ Compiled with warnings\n\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\nA Node.js API is used (process.versions at line: 34) which is not supported in the Edge Runtime.\nLearn more: https://nextjs.org/docs/api-reference/edge-runtime\n\nImport trace for requested module:\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\n./node_modules/@supabase/realtime-js/dist/module/index.js\n./node_modules/@supabase/supabase-js/dist/module/index.js\n./node_modules/@supabase/ssr/dist/module/createBrowserClient.js\n./node_modules/@supabase/ssr/dist/module/index.js\n./lib/auth/server.ts\n\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\nA Node.js API is used (process.versions at line: 35) which is not supported in the Edge Runtime.\nLearn more: https://nextjs.org/docs/api-reference/edge-runtime\n\nImport trace for requested module:\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\n./node_modules/@supabase/realtime-js/dist/module/index.js\n./node_modules/@supabase/supabase-js/dist/module/index.js\n./node_modules/@supabase/ssr/dist/module/createBrowserClient.js\n./node_modules/@supabase/ssr/dist/module/index.js\n./lib/auth/server.ts\n\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\nA Node.js API is used (process.versions at line: 36) which is not supported in the Edge Runtime.\nLearn more: https://nextjs.org/docs/api-reference/edge-runtime\n\nImport trace for requested module:\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\n./node_modules/@supabase/realtime-js/dist/module/index.js\n./node_modules/@supabase/supabase-js/dist/module/index.js\n./node_modules/@supabase/ssr/dist/module/createBrowserClient.js\n./node_modules/@supabase/ssr/dist/module/index.js\n./lib/auth/server.ts\n\n./node_modules/@supabase/supabase-js/dist/module/index.js\nA Node.js API is used (process.version at line: 24) which is not supported in the Edge Runtime.\nLearn more: https://nextjs.org/docs/api-reference/edge-runtime\n\nImport trace for requested module:\n./node_modules/@supabase/supabase-js/dist/module/index.js\n./node_modules/@supabase/ssr/dist/module/createBrowserClient.js\n./node_modules/@supabase/ssr/dist/module/index.js\n./lib/auth/server.ts\n\nFailed to compile.\n\n./app/api/diagrams/[id]/route.ts:36:53\nType error: Property 'errors' does not exist on type 'ZodError<unknown>'.\n\n\u001b[0m \u001b[90m 34 |\u001b[39m     \u001b[36mif\u001b[39m (error \u001b[36minstanceof\u001b[39m z\u001b[33m.\u001b[39m\u001b[33mZodError\u001b[39m) {\u001b[0m\n\u001b[0m \u001b[90m 35 |\u001b[39m       \u001b[36mreturn\u001b[39m \u001b[33mNextResponse\u001b[39m\u001b[33m.\u001b[39mjson(\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 36 |\u001b[39m         { error\u001b[33m:\u001b[39m \u001b[32m'Validation Error'\u001b[39m\u001b[33m,\u001b[39m details\u001b[33m:\u001b[39m error\u001b[33m.\u001b[39merrors }\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m    |\u001b[39m                                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 37 |\u001b[39m         { status\u001b[33m:\u001b[39m \u001b[35m400\u001b[39m }\u001b[0m\n\u001b[0m \u001b[90m 38 |\u001b[39m       )\u001b[0m\n\u001b[0m \u001b[90m 39 |\u001b[39m     }\u001b[0m\nNext.js build worker exited with code: 1 and signal: null\n",
+          "stderr": "<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (108kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)\n ⚠ Compiled with warnings\n\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\nA Node.js API is used (process.versions at line: 34) which is not supported in the Edge Runtime.\nLearn more: https://nextjs.org/docs/api-reference/edge-runtime\n\nImport trace for requested module:\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\n./node_modules/@supabase/realtime-js/dist/module/index.js\n./node_modules/@supabase/supabase-js/dist/module/index.js\n./node_modules/@supabase/ssr/dist/module/createBrowserClient.js\n./node_modules/@supabase/ssr/dist/module/index.js\n./lib/auth/server.ts\n\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\nA Node.js API is used (process.versions at line: 35) which is not supported in the Edge Runtime.\nLearn more: https://nextjs.org/docs/api-reference/edge-runtime\n\nImport trace for requested module:\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\n./node_modules/@supabase/realtime-js/dist/module/index.js\n./node_modules/@supabase/supabase-js/dist/module/index.js\n./node_modules/@supabase/ssr/dist/module/createBrowserClient.js\n./node_modules/@supabase/ssr/dist/module/index.js\n./lib/auth/server.ts\n\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\nA Node.js API is used (process.versions at line: 36) which is not supported in the Edge Runtime.\nLearn more: https://nextjs.org/docs/api-reference/edge-runtime\n\nImport trace for requested module:\n./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js\n./node_modules/@supabase/realtime-js/dist/module/index.js\n./node_modules/@supabase/supabase-js/dist/module/index.js\n./node_modules/@supabase/ssr/dist/module/createBrowserClient.js\n./node_modules/@supabase/ssr/dist/module/index.js\n./lib/auth/server.ts\n\n./node_modules/@supabase/supabase-js/dist/module/index.js\nA Node.js API is used (process.version at line: 24) which is not supported in the Edge Runtime.\nLearn more: https://nextjs.org/docs/api-reference/edge-runtime\n\nImport trace for requested module:\n./node_modules/@supabase/supabase-js/dist/module/index.js\n./node_modules/@supabase/ssr/dist/module/createBrowserClient.js\n./node_modules/@supabase/ssr/dist/module/index.js\n./lib/auth/server.ts\n\nFailed to compile.\n\n./app/api/diagrams/[id]/route.ts:36:53\nType error: Property 'errors' does not exist on type 'ZodError<unknown>'.\n\n\u001b[0m \u001b[90m 34 |\u001b[39m     \u001b[36mif\u001b[39m (error \u001b[36minstanceof\u001b[39m z\u001b[33m.\u001b[39m\u001b[33mZodError\u001b[39m) {\u001b[0m\n\u001b[0m \u001b[90m 35 |\u001b[39m       \u001b[36mreturn\u001b[39m \u001b[33mNextResponse\u001b[39m\u001b[33m.\u001b[39mjson(\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 36 |\u001b[39m         { error\u001b[33m:\u001b[39m \u001b[32m'Validation Error'\u001b[39m\u001b[33m,\u001b[39m details\u001b[33m:\u001b[39m error\u001b[33m.\u001b[39merrors }\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m    |\u001b[39m                                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 37 |\u001b[39m         { status\u001b[33m:\u001b[39m \u001b[35m400\u001b[39m }\u001b[0m\n\u001b[0m \u001b[90m 38 |\u001b[39m       )\u001b[0m\n\u001b[0m \u001b[90m 39 |\u001b[39m     }\u001b[0m\nNext.js build worker exited with code: 1 and signal: null\n"
+        },
+        "timestamp": "2025-08-19T08:27:25.066Z"
+      }
+    ],
+    "major": [],
+    "minor": [
+      {
+        "title": "Optional Environment Variables",
+        "message": "Some optional environment variables missing",
+        "details": {
+          "missing": [
+            "STRIPE_SECRET_KEY",
+            "STRIPE_WEBHOOK_SECRET",
+            "RESEND_API_KEY",
+            "UPSTASH_REDIS_REST_URL"
+          ]
+        },
+        "timestamp": "2025-08-19T08:27:05.736Z"
+      },
+      {
+        "title": "Code Comments",
+        "message": "2395 TODO/FIXME comments found",
+        "details": {
+          "comments": [
+            "./node_modules/callsites/index.js:// TODO: Remove this for the next major release",
+            "./node_modules/callsites/index.d.ts:\t// TODO: Remove this for the next major release, refactor the whole definition to:",
+            "./node_modules/zod/src/v4/classic/tests/string.test.ts:  includesFromIndex2.parse(\"XXXincludesXX\");",
+            "./node_modules/zod/src/v4/classic/tests/lazy.test.ts:// TODO",
+            "./node_modules/zod/src/v4/classic/tests/async-parsing.test.ts:  const goodData = \"XXX\";",
+            "./node_modules/zod/src/v4/classic/tests/async-parsing.test.ts:  const badData = \"XXX\";",
+            "./node_modules/zod/src/v4/classic/tests/async-parsing.test.ts:  // const badData = 'XXX';",
+            "./node_modules/zod/src/v4/classic/tests/async-parsing.test.ts:  // const badData = 'XXX';",
+            "./node_modules/zod/src/v4/classic/tests/async-parsing.test.ts:  const goodData = [\"XXX\"];",
+            "./node_modules/zod/src/v4/classic/tests/async-parsing.test.ts:  const badData = \"XXX\";"
+          ]
+        },
+        "timestamp": "2025-08-19T08:27:13.444Z"
+      }
+    ],
+    "passed": [
+      {
+        "title": "File Structure",
+        "message": "All required files and directories present",
+        "details": null,
+        "timestamp": "2025-08-19T08:27:05.735Z"
+      },
+      {
+        "title": "Security Vulnerabilities",
+        "message": "No known vulnerabilities detected",
+        "details": null,
+        "timestamp": "2025-08-19T08:27:07.730Z"
+      },
+      {
+        "title": "Database Schema",
+        "message": "Schema is valid and up to date",
+        "details": null,
+        "timestamp": "2025-08-19T08:27:10.995Z"
+      },
+      {
+        "title": "BPMN Integration",
+        "message": "BPMN.js integration files present",
+        "details": null,
+        "timestamp": "2025-08-19T08:27:10.996Z"
+      },
+      {
+        "title": "Code Quality",
+        "message": "ESLint checks passed",
+        "details": null,
+        "timestamp": "2025-08-19T08:27:12.402Z"
+      },
+      {
+        "title": "Performance",
+        "message": "Build manifest generated successfully",
+        "details": null,
+        "timestamp": "2025-08-19T08:27:25.067Z"
+      },
+      {
+        "title": "Performance",
+        "message": "Next.js configuration file present",
+        "details": null,
+        "timestamp": "2025-08-19T08:27:25.067Z"
+      }
+    ]
+  }
+}

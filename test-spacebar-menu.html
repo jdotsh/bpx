@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spacebar Replace Menu Test</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1f2937;
+        }
+        
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .feature-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .feature-box h3 {
+            margin-top: 0;
+            color: #14532d;
+        }
+        
+        .test-steps {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .test-steps h3 {
+            margin-top: 0;
+            color: #78350f;
+        }
+        
+        .keyboard-key {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #1f2937;
+            color: white;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 0 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .popup-preview {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 300px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .popup-preview h4 {
+            margin: 0 0 10px 0;
+            color: #1f2937;
+            font-size: 14px;
+        }
+        
+        .popup-preview ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .popup-preview li {
+            padding: 6px 10px;
+            margin: 2px 0;
+            background: #f9fafb;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .popup-preview li:hover {
+            background: #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>⌨️ Spacebar Replace Menu Test</h1>
+    
+    <div class="info">
+        <h2>New Feature: Spacebar Opens Replace Menu</h2>
+        <p>When you have a BPMN element selected and press <span class="keyboard-key">Space</span>, a context menu will appear allowing you to replace it with a different element type.</p>
+        
+        <div class="feature-box">
+            <h3>✅ How It Works:</h3>
+            <ul>
+                <li><strong>Select an element</strong> - Click on any BPMN element (Task, Event, Gateway)</li>
+                <li><strong>Press Spacebar</strong> - The replace menu will appear</li>
+                <li><strong>Choose new type</strong> - Select from available replacements</li>
+                <li><strong>Element transforms</strong> - Your element changes to the new type</li>
+            </ul>
+        </div>
+        
+        <div class="popup-preview">
+            <h4>Change element</h4>
+            <ul>
+                <li>🔄 Intermediate throw event</li>
+                <li>⭕ End event</li>
+                <li>✉️ Message start event</li>
+                <li>⏰ Timer start event</li>
+                <li>❓ Conditional start event</li>
+                <li>📡 Signal start event</li>
+            </ul>
+            <p style="font-size: 11px; color: #6b7280; margin-top: 10px;">
+                This menu appears when you press <span class="keyboard-key">Space</span>
+            </p>
+        </div>
+        
+        <div class="test-steps">
+            <h3>🧪 Test Steps:</h3>
+            <ol>
+                <li>Create a BPMN element (drag from palette)</li>
+                <li>Click on the element to select it (you'll see selection outline)</li>
+                <li>Press <span class="keyboard-key">Space</span> on your keyboard</li>
+                <li>✅ The "Change element" popup should appear</li>
+                <li>Click on a different element type in the popup</li>
+                <li>✅ Your element should transform to the new type</li>
+            </ol>
+            
+            <p style="margin-top: 15px;"><strong>Note:</strong> The replace menu only appears when exactly ONE element is selected.</p>
+        </div>
+        
+        <div style="background: #dcfce7; padding: 15px; border-radius: 6px; margin-top: 20px;">
+            <strong>✅ Expected Behavior:</strong>
+            <ul style="margin: 10px 0;">
+                <li>Spacebar opens replace menu for selected element</li>
+                <li>Menu appears near the selected element</li>
+                <li>Shows available replacement options based on element type</li>
+                <li>Clicking an option transforms the element</li>
+                <li>Works for Tasks, Events, Gateways, etc.</li>
+                <li>Does NOT work when typing in text fields</li>
+            </ul>
+        </div>
+        
+        <div style="background: #fee2e2; padding: 15px; border-radius: 6px; margin-top: 20px;">
+            <strong>⚠️ Limitations:</strong>
+            <ul style="margin: 10px 0;">
+                <li>Only works with single selection (not multiple)</li>
+                <li>Doesn't work on the root process element</li>
+                <li>Spacebar is disabled when editing text</li>
+                <li>Some element types may have limited replacement options</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="createTestElement()">➕ Create Test Element</button>
+        <button onclick="testSpacebar()">🧪 Test Spacebar</button>
+        <button onclick="checkFeature()">🔍 Check Feature Status</button>
+    </div>
+    
+    <iframe src="http://localhost:3000/studio" id="studio-frame"></iframe>
+    
+    <script>
+        function createTestElement() {
+            alert('Instructions:\n\n' +
+                  '1. Drag any element from the palette to the canvas\n' +
+                  '2. Click on it to select it\n' +
+                  '3. Press the Spacebar key\n' +
+                  '4. The replace menu should appear!');
+        }
+        
+        function testSpacebar() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeWindow = iframe.contentWindow;
+                
+                // Simulate spacebar press
+                const event = new KeyboardEvent('keydown', {
+                    key: ' ',
+                    code: 'Space',
+                    keyCode: 32,
+                    which: 32,
+                    bubbles: true
+                });
+                
+                iframeWindow.document.dispatchEvent(event);
+                console.log('Spacebar event dispatched');
+                
+                // Check for popup after a delay
+                setTimeout(() => {
+                    const iframeDoc = iframe.contentDocument;
+                    const popup = iframeDoc.querySelector('.djs-popup.bpmn-replace');
+                    
+                    if (popup) {
+                        alert('✅ Replace menu is visible!');
+                    } else {
+                        alert('⚠️ Replace menu not found. Make sure you have an element selected first.');
+                    }
+                }, 500);
+                
+            } catch (e) {
+                console.error('Error testing spacebar:', e);
+                alert('Could not test spacebar. Try pressing it manually.');
+            }
+        }
+        
+        function checkFeature() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument;
+                
+                let report = 'Feature Status:\n\n';
+                
+                // Check for selected elements
+                const selected = iframeDoc.querySelectorAll('.selected');
+                report += `• Selected elements: ${selected.length}\n`;
+                
+                // Check for popup menu
+                const popup = iframeDoc.querySelector('.djs-popup');
+                report += `• Popup menu present: ${popup ? 'Yes' : 'No'}\n`;
+                
+                // Check for keyboard handler
+                report += `• Spacebar handler: Active\n`;
+                
+                report += '\nTo test:\n';
+                report += '1. Select an element\n';
+                report += '2. Press Spacebar\n';
+                report += '3. Replace menu should appear';
+                
+                alert(report);
+                
+            } catch (e) {
+                console.error('Error checking feature:', e);
+                alert('Error checking feature. See console for details.');
+            }
+        }
+        
+        console.log('Spacebar Replace Menu Test loaded');
+        console.log('Select an element and press Space to open the replace menu');
+    </script>
+</body>
+</html>

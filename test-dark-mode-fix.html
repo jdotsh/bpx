@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dark Mode Symbol Fix Test</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1f2937;
+        }
+        
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .fix-list {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .fix-list h3 {
+            margin-top: 0;
+            color: #14532d;
+        }
+        
+        .fix-list ul {
+            margin: 10px 0;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .test-steps {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .test-steps h3 {
+            margin-top: 0;
+            color: #78350f;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Dark Mode Symbol Border Fix Test</h1>
+    
+    <div class="info">
+        <h2>Problem Fixed</h2>
+        <p>BPMN entity symbols had black borders in dark mode, making them invisible against the dark background.</p>
+        
+        <div class="fix-list">
+            <h3>✅ Fixes Applied:</h3>
+            <ul>
+                <li><strong>Aggressive CSS Rules:</strong> Force ALL SVG strokes to white in dark mode</li>
+                <li><strong>Direct DOM Manipulation:</strong> Directly set stroke/fill attributes on SVG elements</li>
+                <li><strong>MutationObserver:</strong> Catch and fix new elements added dynamically</li>
+                <li><strong>Multiple Fallbacks:</strong> CSS + JavaScript + Observer for complete coverage</li>
+            </ul>
+        </div>
+        
+        <div class="test-steps">
+            <h3>🧪 Test Steps:</h3>
+            <ol>
+                <li>Create a new BPMN diagram element (drag from palette)</li>
+                <li>Toggle to dark mode using the button below</li>
+                <li>ALL symbols should have WHITE borders in dark mode</li>
+                <li>Toggle back to light mode</li>
+                <li>ALL symbols should have BLACK borders in light mode</li>
+                <li>Create more elements in dark mode - they should be immediately white</li>
+            </ol>
+        </div>
+        
+        <div style="background: #dcfce7; padding: 15px; border-radius: 6px; margin-top: 20px;">
+            <strong>Expected Result:</strong>
+            <ul style="margin: 10px 0;">
+                <li>✅ Tasks (rectangles) - White border in dark mode</li>
+                <li>✅ Events (circles) - White border in dark mode</li>
+                <li>✅ Gateways (diamonds) - White border in dark mode</li>
+                <li>✅ Connections (lines) - White in dark mode</li>
+                <li>✅ Icons inside shapes - White in dark mode</li>
+                <li>✅ Text labels - White in dark mode</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="toggleTheme()">🌓 Toggle Theme</button>
+        <button onclick="checkColors()">🔍 Check Element Colors</button>
+        <button onclick="forceRefresh()">🔄 Force Refresh Colors</button>
+    </div>
+    
+    <iframe src="http://localhost:3000/studio" id="studio-frame"></iframe>
+    
+    <script>
+        function toggleTheme() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const themeBtn = iframeDoc.querySelector('[title="Toggle Theme"]');
+                
+                if (themeBtn) {
+                    themeBtn.click();
+                    console.log('Theme toggled');
+                    
+                    // Check colors after toggle
+                    setTimeout(checkColors, 500);
+                } else {
+                    alert('Theme button not found. Make sure the studio is loaded.');
+                }
+            } catch (e) {
+                console.error('Cannot access iframe:', e);
+                alert('Cannot access studio. Check console for details.');
+            }
+        }
+        
+        function checkColors() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                const isDark = iframeDoc.documentElement.classList.contains('dark');
+                const expectedStroke = isDark ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
+                
+                // Check SVG elements
+                const svgElements = iframeDoc.querySelectorAll('.djs-visual > *, .djs-shape rect, .djs-shape circle, .djs-shape polygon, .djs-shape path');
+                let correctCount = 0;
+                let wrongCount = 0;
+                const issues = [];
+                
+                svgElements.forEach((el, index) => {
+                    const computedStroke = window.getComputedStyle(el).stroke;
+                    const strokeAttr = el.getAttribute('stroke');
+                    const styleStroke = el.style.stroke;
+                    
+                    // Check if stroke is correct
+                    if (computedStroke === expectedStroke || 
+                        strokeAttr === (isDark ? '#ffffff' : '#000000') ||
+                        styleStroke === (isDark ? '#ffffff' : '#000000') ||
+                        styleStroke === (isDark ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)')) {
+                        correctCount++;
+                    } else if (computedStroke !== 'none' && computedStroke !== 'transparent') {
+                        wrongCount++;
+                        issues.push({
+                            element: el.tagName,
+                            computed: computedStroke,
+                            attribute: strokeAttr,
+                            style: styleStroke
+                        });
+                    }
+                });
+                
+                let report = `Color Check (${isDark ? 'DARK' : 'LIGHT'} mode):\n\n`;
+                report += `✅ Correct colors: ${correctCount} elements\n`;
+                report += `❌ Wrong colors: ${wrongCount} elements\n\n`;
+                
+                if (wrongCount > 0) {
+                    report += 'Issues found:\n';
+                    issues.slice(0, 5).forEach(issue => {
+                        report += `- ${issue.element}: computed=${issue.computed}, attr=${issue.attribute}, style=${issue.style}\n`;
+                    });
+                    if (issues.length > 5) {
+                        report += `... and ${issues.length - 5} more issues\n`;
+                    }
+                } else {
+                    report += '🎉 All elements have correct colors!';
+                }
+                
+                alert(report);
+                console.log('Full check results:', { isDark, correctCount, wrongCount, issues });
+                
+            } catch (e) {
+                console.error('Cannot check colors:', e);
+                alert('Cannot check colors. See console for details.');
+            }
+        }
+        
+        function forceRefresh() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                const isDark = iframeDoc.documentElement.classList.contains('dark');
+                const strokeColor = isDark ? '#ffffff' : '#000000';
+                const fillColor = isDark ? '#1f2937' : '#ffffff';
+                const textColor = isDark ? '#ffffff' : '#000000';
+                
+                // Force update all SVG elements
+                const allSvgElements = iframeDoc.querySelectorAll('svg *');
+                let updated = 0;
+                
+                allSvgElements.forEach(el => {
+                    if (el.hasAttribute('stroke') && 
+                        el.getAttribute('stroke') !== 'none' && 
+                        el.getAttribute('stroke') !== 'transparent') {
+                        el.style.stroke = strokeColor;
+                        el.setAttribute('stroke', strokeColor);
+                        updated++;
+                    }
+                    
+                    if (el.tagName === 'text' || el.tagName === 'tspan') {
+                        el.style.fill = textColor;
+                        el.setAttribute('fill', textColor);
+                    }
+                });
+                
+                alert(`Force refreshed ${updated} elements to ${isDark ? 'DARK' : 'LIGHT'} mode colors`);
+                
+            } catch (e) {
+                console.error('Cannot force refresh:', e);
+                alert('Cannot force refresh. See console for details.');
+            }
+        }
+        
+        console.log('Dark Mode Fix Test loaded');
+        console.log('This test verifies that all BPMN symbols are visible in dark mode');
+    </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Selection Box Transparency Fix</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1f2937;
+        }
+        
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .fix-details {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .fix-details h3 {
+            margin-top: 0;
+            color: #14532d;
+        }
+        
+        .demo-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+        }
+        
+        .demo-box {
+            text-align: center;
+        }
+        
+        .demo-element {
+            width: 120px;
+            height: 80px;
+            background: #f9fafb;
+            border: 2px solid #1f2937;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+        }
+        
+        .selection-box-bad {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: rgba(37, 99, 235, 0.5);
+            border: 2px solid #2563eb;
+        }
+        
+        .selection-box-good {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: transparent;
+            border: 2px dashed #2563eb;
+        }
+        
+        .test-steps {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .test-steps h3 {
+            margin-top: 0;
+            color: #78350f;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .code-block {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🪟 Selection Box Transparency Fix</h1>
+    
+    <div class="info">
+        <h2>Problem Fixed</h2>
+        <p>When selecting elements, an <strong>opaque square box</strong> was appearing, hiding the selected element. This should be a <strong>transparent outline</strong> only.</p>
+        
+        <div class="demo-container">
+            <div class="demo-box">
+                <h4>❌ Before (Opaque Box)</h4>
+                <div class="demo-element">
+                    <span>Task</span>
+                    <div class="selection-box-bad"></div>
+                </div>
+                <p style="color: #ef4444;">Element hidden by selection</p>
+            </div>
+            
+            <div class="demo-box">
+                <h4>✅ After (Transparent)</h4>
+                <div class="demo-element">
+                    <span>Task</span>
+                    <div class="selection-box-good"></div>
+                </div>
+                <p style="color: #22c55e;">Element visible through selection</p>
+            </div>
+        </div>
+        
+        <div class="fix-details">
+            <h3>✅ Fixes Applied:</h3>
+            <ul>
+                <li><strong>CSS Rules:</strong> All selection rectangles forced to <code>fill: transparent</code></li>
+                <li><strong>Fill Opacity:</strong> Set to 0 for complete transparency</li>
+                <li><strong>JavaScript Enforcement:</strong> Actively removes any opaque fills on selection</li>
+                <li><strong>Aggressive Selectors:</strong> Targets all possible selection box classes</li>
+                <li><strong>Dashed Outline:</strong> Selection shown as dashed border only</li>
+            </ul>
+        </div>
+        
+        <div class="code-block">
+/* CSS Fix Applied */
+.djs-outline rect,
+.djs-selection rect,
+.selected rect:not(.djs-visual rect) {
+    fill: transparent !important;
+    fill-opacity: 0 !important;
+}
+
+/* JavaScript Enforcement */
+box.style.fill = 'transparent'
+box.setAttribute('fill', 'none')
+box.setAttribute('fill-opacity', '0')
+        </div>
+        
+        <div class="test-steps">
+            <h3>🧪 Test Steps:</h3>
+            <ol>
+                <li>Create a BPMN element (task, event, gateway)</li>
+                <li>Click on the element to select it</li>
+                <li>✅ You should see a <strong>dashed blue outline</strong> around the element</li>
+                <li>✅ The element itself should be <strong>fully visible</strong> (not hidden)</li>
+                <li>✅ NO opaque box should appear</li>
+                <li>Try selecting multiple elements (Ctrl+Click)</li>
+                <li>✅ All selected elements should remain visible</li>
+                <li>Toggle dark mode and verify transparency is maintained</li>
+            </ol>
+        </div>
+        
+        <div style="background: #dcfce7; padding: 15px; border-radius: 6px; margin-top: 20px;">
+            <strong>✅ Expected Results:</strong>
+            <ul style="margin: 10px 0;">
+                <li><strong>Selection Outline:</strong> Blue dashed border (3px width)</li>
+                <li><strong>Background:</strong> Completely transparent</li>
+                <li><strong>Element Visibility:</strong> 100% visible through selection</li>
+                <li><strong>Resize Handles:</strong> Small blue squares at corners</li>
+                <li><strong>Drop Shadow:</strong> Subtle shadow effect on selected elements</li>
+                <li>Works in both light and dark modes</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="createAndSelect()">➕ Create & Select Element</button>
+        <button onclick="checkTransparency()">🔍 Check Transparency</button>
+        <button onclick="toggleTheme()">🌓 Toggle Theme</button>
+        <button onclick="forceTransparency()">🔧 Force Transparency</button>
+    </div>
+    
+    <iframe src="http://localhost:3000/studio" id="studio-frame"></iframe>
+    
+    <script>
+        function createAndSelect() {
+            alert('Steps to test:\n\n' +
+                  '1. Drag an element from the palette onto the canvas\n' +
+                  '2. Click on it to select it\n' +
+                  '3. The selection should be a transparent dashed outline\n' +
+                  '4. The element should remain fully visible');
+        }
+        
+        function checkTransparency() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Find all selection-related rectangles
+                const selectionRects = iframeDoc.querySelectorAll('.djs-outline rect, .djs-selection rect, [class*="select"] rect');
+                
+                let report = 'Selection Transparency Check:\n\n';
+                let transparentCount = 0;
+                let opaqueCount = 0;
+                const issues = [];
+                
+                selectionRects.forEach((rect, index) => {
+                    // Skip if it's part of the actual visual
+                    if (rect.closest('.djs-visual')) {
+                        return;
+                    }
+                    
+                    const fill = rect.getAttribute('fill');
+                    const fillOpacity = rect.getAttribute('fill-opacity');
+                    const styleFill = rect.style.fill;
+                    
+                    if (fill === 'none' || fill === 'transparent' || 
+                        fillOpacity === '0' || styleFill === 'transparent') {
+                        transparentCount++;
+                    } else {
+                        opaqueCount++;
+                        issues.push({
+                            index,
+                            fill,
+                            fillOpacity,
+                            styleFill
+                        });
+                    }
+                });
+                
+                report += `✅ Transparent selections: ${transparentCount}\n`;
+                report += `❌ Opaque selections: ${opaqueCount}\n\n`;
+                
+                if (opaqueCount > 0) {
+                    report += 'Issues found:\n';
+                    issues.forEach(issue => {
+                        report += `- Rect ${issue.index}: fill="${issue.fill}", opacity="${issue.fillOpacity}", style="${issue.styleFill}"\n`;
+                    });
+                } else if (transparentCount > 0) {
+                    report += '🎉 All selection boxes are transparent!';
+                } else {
+                    report += 'No selection boxes found. Try selecting an element first.';
+                }
+                
+                alert(report);
+                console.log('Transparency check:', {
+                    transparent: transparentCount,
+                    opaque: opaqueCount,
+                    issues
+                });
+                
+            } catch (e) {
+                console.error('Cannot check transparency:', e);
+                alert('Cannot check transparency. See console for details.');
+            }
+        }
+        
+        function toggleTheme() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const themeBtn = iframeDoc.querySelector('[title="Toggle Theme"]');
+                
+                if (themeBtn) {
+                    themeBtn.click();
+                    console.log('Theme toggled');
+                } else {
+                    alert('Theme button not found.');
+                }
+            } catch (e) {
+                console.error('Cannot toggle theme:', e);
+            }
+        }
+        
+        function forceTransparency() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Force all selection boxes to be transparent
+                const selectionBoxes = iframeDoc.querySelectorAll('.djs-outline rect, .djs-selection rect, [class*="select"] rect');
+                let fixed = 0;
+                
+                selectionBoxes.forEach(box => {
+                    if (!box.closest('.djs-visual')) {
+                        box.style.fill = 'transparent';
+                        box.style.fillOpacity = '0';
+                        box.setAttribute('fill', 'none');
+                        box.setAttribute('fill-opacity', '0');
+                        fixed++;
+                    }
+                });
+                
+                alert(`Forced transparency on ${fixed} selection box(es)`);
+                
+            } catch (e) {
+                console.error('Cannot force transparency:', e);
+                alert('Cannot force transparency. See console for details.');
+            }
+        }
+        
+        console.log('Selection Transparency Test loaded');
+        console.log('This test verifies that selection boxes are transparent, not opaque');
+    </script>
+</body>
+</html>

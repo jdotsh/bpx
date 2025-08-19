@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Toolbar Hover Menu Fix Test</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1f2937;
+        }
+        
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .fix-details {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .fix-details h3 {
+            margin-top: 0;
+            color: #14532d;
+        }
+        
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-box {
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+        }
+        
+        .comparison-box.before {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+        
+        .comparison-box.after {
+            background: #f0fdf4;
+            border-color: #22c55e;
+        }
+        
+        .test-steps {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .test-steps h3 {
+            margin-top: 0;
+            color: #78350f;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .tooltip-demo {
+            display: inline-block;
+            position: relative;
+            padding: 10px 20px;
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        
+        .tooltip-demo:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .tooltip {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 10px;
+            padding: 8px 12px;
+            background: #1f2937;
+            color: white;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-right-color: #1f2937;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Toolbar Hover Menu Fix Test</h1>
+    
+    <div class="info">
+        <h2>Problem Fixed</h2>
+        <p>The hover tooltips in the BPMN palette were appearing <strong>above</strong> the elements (using <code>bottom-full</code>) instead of <strong>beside</strong> them, causing visibility issues and getting cut off.</p>
+        
+        <div class="before-after">
+            <div class="comparison-box before">
+                <h4>❌ Before (Problem)</h4>
+                <ul>
+                    <li>Tooltips positioned above elements</li>
+                    <li>Often cut off by container edges</li>
+                    <li>Hard to read when overlapping</li>
+                    <li>No smart positioning</li>
+                </ul>
+            </div>
+            <div class="comparison-box after">
+                <h4>✅ After (Fixed)</h4>
+                <ul>
+                    <li>Tooltips positioned to the side</li>
+                    <li>Smart edge detection</li>
+                    <li>Switches sides near screen edge</li>
+                    <li>Smooth animations with delay</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="fix-details">
+            <h3>✅ Fixes Applied:</h3>
+            <ul>
+                <li><strong>Side Positioning:</strong> Tooltips now appear to the right of elements (or left near edge)</li>
+                <li><strong>Smart Detection:</strong> Automatically switches sides when near screen edge</li>
+                <li><strong>Improved Visibility:</strong> Higher z-index, shadows, and borders for clarity</li>
+                <li><strong>Arrow Indicator:</strong> Triangular arrow points to the hovered element</li>
+                <li><strong>Smooth Animation:</strong> 500ms delay before showing, smooth fade-in</li>
+                <li><strong>Overflow Handling:</strong> Container allows tooltips to extend outside bounds</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <h3>Demo: How Tooltips Should Work</h3>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+                <div class="tooltip-demo">
+                    Hover me (left side)
+                    <div class="tooltip">
+                        This tooltip appears to the right!
+                    </div>
+                </div>
+                <div class="tooltip-demo" style="margin-left: auto;">
+                    Hover me (right side)
+                    <div class="tooltip" style="left: auto; right: 100%; margin-left: 0; margin-right: 10px;">
+                        This tooltip appears to the left!
+                        <div style="position: absolute; left: 100%; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-left-color: #1f2937;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-steps">
+            <h3>🧪 Test Steps:</h3>
+            <ol>
+                <li>Click on the palette button in the left toolbar to open the BPMN elements menu</li>
+                <li>Hover over any BPMN element icon in the popover</li>
+                <li>✅ Tooltip should appear to the <strong>RIGHT</strong> of the element (not above)</li>
+                <li>✅ Tooltip should show element name and action clearly</li>
+                <li>Move to elements on the right edge of the popover</li>
+                <li>✅ Tooltips should automatically switch to the <strong>LEFT</strong> side near edge</li>
+                <li>✅ Tooltips should have a triangular arrow pointing to the element</li>
+                <li>✅ There should be a 500ms delay before showing (prevents flickering)</li>
+            </ol>
+        </div>
+        
+        <div style="background: #dcfce7; padding: 15px; border-radius: 6px; margin-top: 20px;">
+            <strong>✅ Expected Results:</strong>
+            <ul style="margin: 10px 0;">
+                <li>Tooltips appear <strong>beside</strong> elements, not above</li>
+                <li>Smart positioning avoids screen edges</li>
+                <li>Clear visibility with shadows and borders</li>
+                <li>Arrow indicator points to source element</li>
+                <li>Smooth animations with appropriate delays</li>
+                <li>No tooltips getting cut off by container</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="openPalette()">📦 Open Palette</button>
+        <button onclick="checkTooltips()">🔍 Check Tooltips</button>
+        <button onclick="toggleTheme()">🌓 Toggle Theme</button>
+    </div>
+    
+    <iframe src="http://localhost:3000/studio" id="studio-frame"></iframe>
+    
+    <script>
+        function openPalette() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Find and click the palette button
+                const paletteBtn = iframeDoc.querySelector('.bpmn-palette-btn');
+                if (paletteBtn) {
+                    paletteBtn.click();
+                    console.log('Palette opened');
+                    
+                    setTimeout(() => {
+                        alert('Now hover over any element in the palette to see the improved tooltips!');
+                    }, 500);
+                } else {
+                    alert('Palette button not found. Try clicking the leftmost button in the toolbar.');
+                }
+            } catch (e) {
+                console.error('Cannot open palette:', e);
+                alert('Cannot open palette. Please click it manually.');
+            }
+        }
+        
+        function checkTooltips() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Check for tooltip elements
+                const tooltips = iframeDoc.querySelectorAll('.bpmn-entry');
+                let report = 'Tooltip Check:\n\n';
+                
+                if (tooltips.length > 0) {
+                    report += `Found ${tooltips.length} BPMN entries\n\n`;
+                    report += 'Tooltip positioning should be:\n';
+                    report += '• To the RIGHT of elements (left-full class)\n';
+                    report += '• Or to the LEFT near edge (right-full class)\n';
+                    report += '• With arrow indicators\n';
+                    report += '• 500ms hover delay\n';
+                } else {
+                    report += 'No palette entries found.\n';
+                    report += 'Please open the palette first.';
+                }
+                
+                alert(report);
+                console.log('Tooltip check complete:', { tooltips: tooltips.length });
+                
+            } catch (e) {
+                console.error('Cannot check tooltips:', e);
+                alert('Cannot check tooltips. See console for details.');
+            }
+        }
+        
+        function toggleTheme() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const themeBtn = iframeDoc.querySelector('[title="Toggle Theme"]');
+                
+                if (themeBtn) {
+                    themeBtn.click();
+                    console.log('Theme toggled');
+                } else {
+                    alert('Theme button not found.');
+                }
+            } catch (e) {
+                console.error('Cannot toggle theme:', e);
+            }
+        }
+        
+        console.log('Hover Menu Fix Test loaded');
+        console.log('This test verifies that tooltips appear beside elements, not above');
+    </script>
+</body>
+</html>

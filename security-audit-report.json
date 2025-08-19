@@ -1,0 +1,231 @@
+{
+  "summary": {
+    "critical": 1,
+    "high": 3,
+    "medium": 8,
+    "low": 0,
+    "securePatterns": 24,
+    "securityScore": 0,
+    "timestamp": "2025-08-19T08:30:07.072Z"
+  },
+  "vulnerabilities": [
+    {
+      "severity": "medium",
+      "category": "Input Validation",
+      "description": "project.ts uses z.any() without strict validation",
+      "impact": "Could allow unexpected data types leading to application errors or security issues",
+      "recommendation": "Replace z.any() with specific type validations or add .strict() mode",
+      "timestamp": "2025-08-19T08:30:07.053Z"
+    },
+    {
+      "severity": "high",
+      "category": "File Upload",
+      "description": "route.ts may not validate file types",
+      "impact": "Could allow malicious file uploads",
+      "recommendation": "Implement proper file type and size validation",
+      "timestamp": "2025-08-19T08:30:07.054Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Rate Limiting",
+      "description": "route.ts POST endpoint without rate limiting",
+      "impact": "Could be vulnerable to DoS attacks or abuse",
+      "recommendation": "Implement rate limiting for API endpoints",
+      "timestamp": "2025-08-19T08:30:07.059Z"
+    },
+    {
+      "severity": "high",
+      "category": "API Security",
+      "description": "route.ts may not require authentication",
+      "impact": "Could allow unauthorized access to API endpoints",
+      "recommendation": "Add authentication checks to all protected endpoints",
+      "timestamp": "2025-08-19T08:30:07.059Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Information Disclosure",
+      "description": "route.ts may leak error details",
+      "impact": "Could expose sensitive system information to attackers",
+      "recommendation": "Sanitize error messages before returning to client",
+      "timestamp": "2025-08-19T08:30:07.059Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Rate Limiting",
+      "description": "route.ts POST endpoint without rate limiting",
+      "impact": "Could be vulnerable to DoS attacks or abuse",
+      "recommendation": "Implement rate limiting for API endpoints",
+      "timestamp": "2025-08-19T08:30:07.059Z"
+    },
+    {
+      "severity": "high",
+      "category": "API Security",
+      "description": "route.ts may not require authentication",
+      "impact": "Could allow unauthorized access to API endpoints",
+      "recommendation": "Add authentication checks to all protected endpoints",
+      "timestamp": "2025-08-19T08:30:07.060Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Rate Limiting",
+      "description": "route.ts POST endpoint without rate limiting",
+      "impact": "Could be vulnerable to DoS attacks or abuse",
+      "recommendation": "Implement rate limiting for API endpoints",
+      "timestamp": "2025-08-19T08:30:07.060Z"
+    },
+    {
+      "severity": "medium",
+      "category": "CSRF",
+      "description": "No explicit CSRF protection found in middleware",
+      "impact": "State-changing requests could be vulnerable to CSRF attacks",
+      "recommendation": "Implement CSRF token validation for state-changing operations",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    },
+    {
+      "severity": "medium",
+      "category": "CSRF",
+      "description": "SameSite cookie attribute not configured",
+      "impact": "Cookies could be sent in cross-site requests",
+      "recommendation": "Configure SameSite=Strict or SameSite=Lax for cookies",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Security Headers",
+      "description": "Missing Permissions-Policy security header",
+      "impact": "Could leave application vulnerable to various attacks",
+      "recommendation": "Configure Permissions-Policy in next.config.js",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    },
+    {
+      "severity": "critical",
+      "category": "Environment Security",
+      "description": ".env files not in .gitignore",
+      "impact": "Sensitive credentials could be committed to version control",
+      "recommendation": "Add .env* to .gitignore immediately",
+      "timestamp": "2025-08-19T08:30:07.062Z"
+    }
+  ],
+  "securePatterns": [
+    {
+      "category": "Input Validation",
+      "description": "diagram.ts uses proper string length limits",
+      "timestamp": "2025-08-19T08:30:07.052Z"
+    },
+    {
+      "category": "XSS Protection",
+      "description": "diagram.ts trims input strings",
+      "timestamp": "2025-08-19T08:30:07.053Z"
+    },
+    {
+      "category": "SQL Injection",
+      "description": "diagram.ts validates ID format",
+      "timestamp": "2025-08-19T08:30:07.053Z"
+    },
+    {
+      "category": "Input Validation",
+      "description": "project.ts uses proper string length limits",
+      "timestamp": "2025-08-19T08:30:07.053Z"
+    },
+    {
+      "category": "XSS Protection",
+      "description": "project.ts trims input strings",
+      "timestamp": "2025-08-19T08:30:07.053Z"
+    },
+    {
+      "category": "SQL Injection",
+      "description": "project.ts validates ID format",
+      "timestamp": "2025-08-19T08:30:07.053Z"
+    },
+    {
+      "category": "Input Validation",
+      "description": "route.ts uses proper string length limits",
+      "timestamp": "2025-08-19T08:30:07.054Z"
+    },
+    {
+      "category": "SQL Injection",
+      "description": "route.ts validates ID format",
+      "timestamp": "2025-08-19T08:30:07.054Z"
+    },
+    {
+      "category": "Authentication",
+      "description": "server.ts implements user/session checking",
+      "timestamp": "2025-08-19T08:30:07.055Z"
+    },
+    {
+      "category": "Authentication",
+      "description": "middleware.ts implements user/session checking",
+      "timestamp": "2025-08-19T08:30:07.055Z"
+    },
+    {
+      "category": "CORS",
+      "description": "route.ts handles response headers",
+      "timestamp": "2025-08-19T08:30:07.059Z"
+    },
+    {
+      "category": "SQL Injection",
+      "description": "route.ts uses Prisma ORM (protected from SQL injection)",
+      "timestamp": "2025-08-19T08:30:07.059Z"
+    },
+    {
+      "category": "CORS",
+      "description": "route.ts handles response headers",
+      "timestamp": "2025-08-19T08:30:07.059Z"
+    },
+    {
+      "category": "CORS",
+      "description": "route.ts handles response headers",
+      "timestamp": "2025-08-19T08:30:07.059Z"
+    },
+    {
+      "category": "CORS",
+      "description": "route.ts handles response headers",
+      "timestamp": "2025-08-19T08:30:07.060Z"
+    },
+    {
+      "category": "SQL Injection",
+      "description": "route.ts uses Prisma ORM (protected from SQL injection)",
+      "timestamp": "2025-08-19T08:30:07.060Z"
+    },
+    {
+      "category": "XSS Protection",
+      "description": "bpmn-studio.tsx uses JSX for safe rendering",
+      "timestamp": "2025-08-19T08:30:07.060Z"
+    },
+    {
+      "category": "XSS Protection",
+      "description": "bpmn-canvas.tsx uses JSX for safe rendering",
+      "timestamp": "2025-08-19T08:30:07.060Z"
+    },
+    {
+      "category": "XSS Protection",
+      "description": "page.tsx uses JSX for safe rendering",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    },
+    {
+      "category": "XSS Protection",
+      "description": "page.tsx uses JSX for safe rendering",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    },
+    {
+      "category": "Security Headers",
+      "description": "X-Frame-Options configured",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    },
+    {
+      "category": "Security Headers",
+      "description": "Content-Security-Policy configured",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    },
+    {
+      "category": "Security Headers",
+      "description": "X-Content-Type-Options configured",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    },
+    {
+      "category": "Security Headers",
+      "description": "Referrer-Policy configured",
+      "timestamp": "2025-08-19T08:30:07.061Z"
+    }
+  ]
+}

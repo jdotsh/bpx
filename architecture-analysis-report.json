@@ -1,0 +1,585 @@
+{
+  "summary": {
+    "overallScore": 59,
+    "metrics": {
+      "codeComplexity": 27,
+      "separationOfConcerns": 81.66666666666667,
+      "errorHandling": 51.25,
+      "performance": 50,
+      "scalability": 85
+    },
+    "critical": 0,
+    "major": 3,
+    "minor": 9,
+    "strengths": 76,
+    "timestamp": "2025-08-19T08:31:46.684Z"
+  },
+  "issues": [
+    {
+      "severity": "major",
+      "category": "Security",
+      "description": "Missing authentication in API route",
+      "impact": "Could allow unauthorized access to sensitive data",
+      "recommendation": "Add authentication checks to all protected routes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.671Z"
+    },
+    {
+      "severity": "major",
+      "category": "Security",
+      "description": "Missing authentication in API route",
+      "impact": "Could allow unauthorized access to sensitive data",
+      "recommendation": "Add authentication checks to all protected routes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "severity": "major",
+      "category": "Security",
+      "description": "Missing authentication in API route",
+      "impact": "Could allow unauthorized access to sensitive data",
+      "recommendation": "Add authentication checks to all protected routes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "severity": "minor",
+      "category": "State Management",
+      "description": "Component has many state variables",
+      "impact": "Could indicate component is too complex or needs state consolidation",
+      "recommendation": "Consider using useReducer or lifting state up",
+      "file": "bpmn-elements-palette.tsx",
+      "timestamp": "2025-08-19T08:31:46.674Z"
+    },
+    {
+      "severity": "minor",
+      "category": "State Management",
+      "description": "Component has many state variables",
+      "impact": "Could indicate component is too complex or needs state consolidation",
+      "recommendation": "Consider using useReducer or lifting state up",
+      "file": "bpmn-palette-popover.tsx",
+      "timestamp": "2025-08-19T08:31:46.675Z"
+    },
+    {
+      "severity": "minor",
+      "category": "State Management",
+      "description": "Component has many state variables",
+      "impact": "Could indicate component is too complex or needs state consolidation",
+      "recommendation": "Consider using useReducer or lifting state up",
+      "file": "bpmn-studio.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "severity": "minor",
+      "category": "Code Quality",
+      "description": "Debug console.log statements found (6 occurrences)",
+      "impact": "Could indicate maintenance issues or technical debt",
+      "recommendation": "Remove debug statements or use proper logging",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.681Z"
+    },
+    {
+      "severity": "minor",
+      "category": "Code Quality",
+      "description": "TypeScript any type usage (5 occurrences)",
+      "impact": "Could indicate maintenance issues or technical debt",
+      "recommendation": "Use specific types instead of any",
+      "file": "server.ts",
+      "timestamp": "2025-08-19T08:31:46.682Z"
+    },
+    {
+      "severity": "minor",
+      "category": "Code Quality",
+      "description": "TypeScript any type usage (6 occurrences)",
+      "impact": "Could indicate maintenance issues or technical debt",
+      "recommendation": "Use specific types instead of any",
+      "file": "bpmn-designer-optimized.ts",
+      "timestamp": "2025-08-19T08:31:46.683Z"
+    },
+    {
+      "severity": "minor",
+      "category": "Code Quality",
+      "description": "TypeScript any type usage (6 occurrences)",
+      "impact": "Could indicate maintenance issues or technical debt",
+      "recommendation": "Use specific types instead of any",
+      "file": "bpmn-designer.ts",
+      "timestamp": "2025-08-19T08:31:46.683Z"
+    },
+    {
+      "severity": "minor",
+      "category": "Code Quality",
+      "description": "Debug console.log statements found (7 occurrences)",
+      "impact": "Could indicate maintenance issues or technical debt",
+      "recommendation": "Remove debug statements or use proper logging",
+      "file": "bpmn-palette-integration.ts",
+      "timestamp": "2025-08-19T08:31:46.684Z"
+    },
+    {
+      "severity": "minor",
+      "category": "Code Quality",
+      "description": "TypeScript any type usage (21 occurrences)",
+      "impact": "Could indicate maintenance issues or technical debt",
+      "recommendation": "Use specific types instead of any",
+      "file": "bpmn-palette-integration.ts",
+      "timestamp": "2025-08-19T08:31:46.684Z"
+    }
+  ],
+  "strengths": [
+    {
+      "category": "Service Layer",
+      "description": "Uses proper service class pattern",
+      "file": "diagram.ts",
+      "timestamp": "2025-08-19T08:31:46.668Z"
+    },
+    {
+      "category": "Service Layer",
+      "description": "Uses stateless service methods",
+      "file": "diagram.ts",
+      "timestamp": "2025-08-19T08:31:46.669Z"
+    },
+    {
+      "category": "Error Handling",
+      "description": "Consistent try-catch error handling",
+      "file": "diagram.ts",
+      "timestamp": "2025-08-19T08:31:46.669Z"
+    },
+    {
+      "category": "Database Optimization",
+      "description": "Uses selective field querying",
+      "file": "diagram.ts",
+      "timestamp": "2025-08-19T08:31:46.669Z"
+    },
+    {
+      "category": "Scalability",
+      "description": "Implements pagination",
+      "file": "diagram.ts",
+      "timestamp": "2025-08-19T08:31:46.669Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses proper return types with null handling",
+      "file": "diagram.ts",
+      "timestamp": "2025-08-19T08:31:46.669Z"
+    },
+    {
+      "category": "Service Layer",
+      "description": "Uses proper service class pattern",
+      "file": "project.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Service Layer",
+      "description": "Uses stateless service methods",
+      "file": "project.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Error Handling",
+      "description": "Consistent try-catch error handling",
+      "file": "project.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Database Optimization",
+      "description": "Uses selective field querying",
+      "file": "project.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Scalability",
+      "description": "Implements pagination",
+      "file": "project.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses proper return types with null handling",
+      "file": "project.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Service Layer",
+      "description": "Uses proper service class pattern",
+      "file": "profile.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Service Layer",
+      "description": "Uses stateless service methods",
+      "file": "profile.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Error Handling",
+      "description": "Consistent try-catch error handling",
+      "file": "profile.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Database Optimization",
+      "description": "Uses selective field querying",
+      "file": "profile.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses proper return types with null handling",
+      "file": "profile.ts",
+      "timestamp": "2025-08-19T08:31:46.670Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Implements GET, PUT, DELETE methods",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.671Z"
+    },
+    {
+      "category": "Security",
+      "description": "Implements authentication checks",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.671Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Uses proper HTTP status codes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.671Z"
+    },
+    {
+      "category": "Debugging",
+      "description": "Implements error logging",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.671Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Uses proper HTTP status codes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.671Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Implements GET methods",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "Security",
+      "description": "Implements authentication checks",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Uses proper HTTP status codes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "Debugging",
+      "description": "Implements error logging",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Implements GET, POST methods",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "Security",
+      "description": "Implements authentication checks",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Uses proper HTTP status codes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "Debugging",
+      "description": "Implements error logging",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Implements GET methods",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Uses proper HTTP status codes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.672Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Implements GET, PUT, DELETE methods",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "Security",
+      "description": "Implements authentication checks",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Uses proper HTTP status codes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "Debugging",
+      "description": "Implements error logging",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Implements GET, POST methods",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "Security",
+      "description": "Implements authentication checks",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Uses proper HTTP status codes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "Debugging",
+      "description": "Implements error logging",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Implements POST methods",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "API Design",
+      "description": "Uses proper HTTP status codes",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "Debugging",
+      "description": "Implements error logging",
+      "file": "route.ts",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-canvas.tsx",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "Performance",
+      "description": "Uses React performance optimizations",
+      "file": "bpmn-canvas.tsx",
+      "timestamp": "2025-08-19T08:31:46.673Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-collaboration-panel.tsx",
+      "timestamp": "2025-08-19T08:31:46.674Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-element-item.tsx",
+      "timestamp": "2025-08-19T08:31:46.674Z"
+    },
+    {
+      "category": "Accessibility",
+      "description": "Implements accessibility attributes",
+      "file": "bpmn-element-item.tsx",
+      "timestamp": "2025-08-19T08:31:46.674Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-elements-palette.tsx",
+      "timestamp": "2025-08-19T08:31:46.674Z"
+    },
+    {
+      "category": "Performance",
+      "description": "Uses React performance optimizations",
+      "file": "bpmn-elements-palette.tsx",
+      "timestamp": "2025-08-19T08:31:46.674Z"
+    },
+    {
+      "category": "Accessibility",
+      "description": "Implements accessibility attributes",
+      "file": "bpmn-elements-palette.tsx",
+      "timestamp": "2025-08-19T08:31:46.674Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-export-modal.tsx",
+      "timestamp": "2025-08-19T08:31:46.674Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-palette-group.tsx",
+      "timestamp": "2025-08-19T08:31:46.675Z"
+    },
+    {
+      "category": "Accessibility",
+      "description": "Implements accessibility attributes",
+      "file": "bpmn-palette-group.tsx",
+      "timestamp": "2025-08-19T08:31:46.675Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-palette-popover.tsx",
+      "timestamp": "2025-08-19T08:31:46.675Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-preview-modal.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Accessibility",
+      "description": "Implements accessibility attributes",
+      "file": "bpmn-preview-modal.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-studio.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Performance",
+      "description": "Uses React performance optimizations",
+      "file": "bpmn-studio.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "bpmn-toolbar.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Performance",
+      "description": "Uses React performance optimizations",
+      "file": "bpmn-toolbar.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "error-boundary.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Component Design",
+      "description": "Supports composition pattern",
+      "file": "error-boundary.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Error Handling",
+      "description": "Uses error boundaries",
+      "file": "error-boundary.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "theme-provider.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Component Design",
+      "description": "Supports composition pattern",
+      "file": "theme-provider.tsx",
+      "timestamp": "2025-08-19T08:31:46.676Z"
+    },
+    {
+      "category": "Accessibility",
+      "description": "Implements accessibility attributes",
+      "file": "alert.tsx",
+      "timestamp": "2025-08-19T08:31:46.677Z"
+    },
+    {
+      "category": "Type Safety",
+      "description": "Uses TypeScript prop interfaces",
+      "file": "button.tsx",
+      "timestamp": "2025-08-19T08:31:46.677Z"
+    },
+    {
+      "category": "Performance",
+      "description": "Uses Next.js package import optimization",
+      "file": null,
+      "timestamp": "2025-08-19T08:31:46.677Z"
+    },
+    {
+      "category": "Performance",
+      "description": "Includes bundle analysis script",
+      "file": null,
+      "timestamp": "2025-08-19T08:31:46.678Z"
+    },
+    {
+      "category": "Performance",
+      "description": "Implements caching strategy",
+      "file": "redis.ts",
+      "timestamp": "2025-08-19T08:31:46.678Z"
+    },
+    {
+      "category": "Scalability",
+      "description": "Database has 8 indexes for query optimization",
+      "file": null,
+      "timestamp": "2025-08-19T08:31:46.678Z"
+    },
+    {
+      "category": "Data Integrity",
+      "description": "Uses proper foreign key cascade handling",
+      "file": null,
+      "timestamp": "2025-08-19T08:31:46.678Z"
+    },
+    {
+      "category": "Scalability",
+      "description": "Implements soft delete pattern",
+      "file": null,
+      "timestamp": "2025-08-19T08:31:46.678Z"
+    },
+    {
+      "category": "Scalability",
+      "description": "Supports external database and caching",
+      "file": ".env.local",
+      "timestamp": "2025-08-19T08:31:46.679Z"
+    },
+    {
+      "category": "Scalability",
+      "description": "Implements rate limiting",
+      "file": null,
+      "timestamp": "2025-08-19T08:31:46.679Z"
+    }
+  ]
+}

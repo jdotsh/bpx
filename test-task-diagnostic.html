@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task vs Event Diagnostic</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: monospace;
+            padding: 20px;
+            background: #1f2937;
+            color: #f3f4f6;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        #results {
+            background: #111827;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #374151;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .highlight {
+            background: #fbbf24;
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Task vs Event Color Diagnostic</h1>
+    <p>This will show why Tasks aren't inverting colors while Events are.</p>
+    
+    <div>
+        <button onclick="diagnose()">🔬 Run Diagnostic</button>
+        <button onclick="compareElements()">📊 Compare Task vs Event</button>
+        <button onclick="findTasks()">🔎 Find All Tasks</button>
+        <button onclick="forceFix()">⚡ Force Fix Tasks</button>
+        <button onclick="toggleTheme()">🌓 Toggle Theme</button>
+    </div>
+    
+    <div id="results">Diagnostic results will appear here...</div>
+    
+    <iframe src="http://localhost:3000/studio" id="studio-frame"></iframe>
+    
+    <script>
+        function log(message, isImportant = false) {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = isImportant ? '⚠️ ' : '• ';
+            results.innerHTML += `${timestamp} ${prefix}${message}\n`;
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function diagnose() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                log('=== STARTING DIAGNOSTIC ===', true);
+                
+                // Check theme
+                const isDark = iframeDoc.documentElement.classList.contains('dark');
+                log(`Current theme: ${isDark ? 'DARK' : 'LIGHT'}`);
+                
+                // Find all rectangles (Tasks)
+                const allRects = iframeDoc.querySelectorAll('rect');
+                log(`Found ${allRects.length} rect elements`);
+                
+                // Find Task-specific rectangles
+                const taskRects = [];
+                const eventCircles = [];
+                
+                allRects.forEach(rect => {
+                    const parent = rect.closest('[data-element-id]');
+                    if (parent) {
+                        const id = parent.getAttribute('data-element-id');
+                        if (id && id.includes('Task')) {
+                            taskRects.push({
+                                element: rect,
+                                id: id,
+                                parent: parent
+                            });
+                        }
+                    }
+                });
+                
+                // Find Event circles
+                const allCircles = iframeDoc.querySelectorAll('circle');
+                allCircles.forEach(circle => {
+                    const parent = circle.closest('[data-element-id]');
+                    if (parent) {
+                        const id = parent.getAttribute('data-element-id');
+                        if (id && id.includes('Event')) {
+                            eventCircles.push({
+                                element: circle,
+                                id: id,
+                                parent: parent
+                            });
+                        }
+                    }
+                });
+                
+                log(`Found ${taskRects.length} Task rectangles`, true);
+                log(`Found ${eventCircles.length} Event circles`, true);
+                
+                // Analyze Tasks
+                log('\n=== TASK ANALYSIS ===', true);
+                taskRects.forEach((task, index) => {
+                    const rect = task.element;
+                    const stroke = rect.getAttribute('stroke');
+                    const styleStroke = rect.style.stroke;
+                    const computedStroke = window.getComputedStyle(rect).stroke;
+                    const fill = rect.getAttribute('fill');
+                    const styleFill = rect.style.fill;
+                    const computedFill = window.getComputedStyle(rect).fill;
+                    
+                    log(`\nTask ${index + 1} (${task.id}):`);
+                    log(`  Stroke attribute: ${stroke}`);
+                    log(`  Stroke style: ${styleStroke}`);
+                    log(`  Stroke computed: ${computedStroke}`);
+                    log(`  Fill attribute: ${fill}`);
+                    log(`  Fill style: ${styleFill}`);
+                    log(`  Fill computed: ${computedFill}`);
+                    
+                    // Check if colors are correct for theme
+                    if (isDark) {
+                        if (computedStroke === 'rgb(0, 0, 0)' || computedStroke === '#000000') {
+                            log(`  ❌ BLACK STROKE IN DARK MODE!`, true);
+                        } else if (computedStroke === 'rgb(255, 255, 255)' || computedStroke === '#ffffff') {
+                            log(`  ✅ White stroke (correct)`);
+                        }
+                    }
+                });
+                
+                // Analyze Events for comparison
+                log('\n=== EVENT ANALYSIS (for comparison) ===', true);
+                eventCircles.slice(0, 2).forEach((event, index) => {
+                    const circle = event.element;
+                    const stroke = circle.getAttribute('stroke');
+                    const computedStroke = window.getComputedStyle(circle).stroke;
+                    
+                    log(`\nEvent ${index + 1} (${event.id}):`);
+                    log(`  Stroke attribute: ${stroke}`);
+                    log(`  Stroke computed: ${computedStroke}`);
+                });
+                
+                // Check for style elements
+                log('\n=== STYLE ELEMENTS ===', true);
+                const styleElements = iframeDoc.querySelectorAll('style');
+                log(`Found ${styleElements.length} style elements`);
+                
+                const bpmnStyles = iframeDoc.getElementById('bpmn-custom-styles');
+                if (bpmnStyles) {
+                    log('✅ Custom BPMN styles found');
+                    const content = bpmnStyles.textContent || '';
+                    if (content.includes('rect')) {
+                        log('✅ Contains rect rules');
+                    }
+                    if (content.includes('!important')) {
+                        log('✅ Uses !important');
+                    }
+                } else {
+                    log('❌ Custom BPMN styles NOT found!', true);
+                }
+                
+                log('\n=== DIAGNOSTIC COMPLETE ===', true);
+                
+            } catch (e) {
+                log(`ERROR: ${e.message}`, true);
+                console.error(e);
+            }
+        }
+        
+        function compareElements() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                log('\n=== ELEMENT COMPARISON ===', true);
+                
+                // Find a Task and an Event
+                const task = iframeDoc.querySelector('[data-element-id*="Task"]');
+                const event = iframeDoc.querySelector('[data-element-id*="Event"]');
+                
+                if (task) {
+                    log('\nTASK STRUCTURE:', true);
+                    log(task.outerHTML.substring(0, 500) + '...');
+                    
+                    const taskRect = task.querySelector('rect');
+                    if (taskRect) {
+                        log('\nTask rect attributes:');
+                        for (let attr of taskRect.attributes) {
+                            log(`  ${attr.name}="${attr.value}"`);
+                        }
+                    }
+                }
+                
+                if (event) {
+                    log('\nEVENT STRUCTURE:', true);
+                    log(event.outerHTML.substring(0, 500) + '...');
+                    
+                    const eventCircle = event.querySelector('circle');
+                    if (eventCircle) {
+                        log('\nEvent circle attributes:');
+                        for (let attr of eventCircle.attributes) {
+                            log(`  ${attr.name}="${attr.value}"`);
+                        }
+                    }
+                }
+                
+                if (!task && !event) {
+                    log('No Task or Event elements found. Create some first!', true);
+                }
+                
+            } catch (e) {
+                log(`ERROR: ${e.message}`, true);
+            }
+        }
+        
+        function findTasks() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                log('\n=== FINDING ALL TASKS ===', true);
+                
+                // Multiple ways to find Tasks
+                const methods = [
+                    { selector: '[data-element-id*="Task"]', name: 'By data-element-id' },
+                    { selector: '.djs-element[data-element-id*="Task"]', name: 'By class + id' },
+                    { selector: 'g[data-element-id*="Task"]', name: 'By g tag' },
+                    { selector: '.djs-shape rect', name: 'All shape rects' }
+                ];
+                
+                methods.forEach(method => {
+                    const elements = iframeDoc.querySelectorAll(method.selector);
+                    log(`${method.name}: ${elements.length} found`);
+                    
+                    if (elements.length > 0 && method.selector.includes('Task')) {
+                        elements.forEach((el, i) => {
+                            const rect = el.querySelector('rect');
+                            if (rect) {
+                                const stroke = window.getComputedStyle(rect).stroke;
+                                log(`  Task ${i + 1}: stroke = ${stroke}`);
+                            }
+                        });
+                    }
+                });
+                
+            } catch (e) {
+                log(`ERROR: ${e.message}`, true);
+            }
+        }
+        
+        function forceFix() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const isDark = iframeDoc.documentElement.classList.contains('dark');
+                
+                log('\n=== FORCE FIXING TASKS ===', true);
+                
+                // Find all Tasks
+                const tasks = iframeDoc.querySelectorAll('[data-element-id*="Task"]');
+                log(`Found ${tasks.length} tasks to fix`);
+                
+                let fixed = 0;
+                tasks.forEach(task => {
+                    const rects = task.querySelectorAll('rect');
+                    rects.forEach(rect => {
+                        const oldStroke = rect.getAttribute('stroke');
+                        const newStroke = isDark ? '#ffffff' : '#000000';
+                        const newFill = isDark ? '#1f2937' : '#ffffff';
+                        
+                        // Force both attribute and style
+                        rect.setAttribute('stroke', newStroke);
+                        rect.style.stroke = newStroke;
+                        rect.style.strokeOpacity = '1';
+                        rect.style.strokeWidth = '2px';
+                        
+                        if (!rect.closest('.djs-outline')) {
+                            rect.setAttribute('fill', newFill);
+                            rect.style.fill = newFill;
+                        }
+                        
+                        log(`Fixed rect: ${oldStroke} → ${newStroke}`);
+                        fixed++;
+                    });
+                });
+                
+                log(`✅ Fixed ${fixed} rectangles`, true);
+                
+                // Also inject a style element
+                let forceStyle = iframeDoc.getElementById('force-task-fix');
+                if (!forceStyle) {
+                    forceStyle = iframeDoc.createElement('style');
+                    forceStyle.id = 'force-task-fix';
+                    iframeDoc.head.appendChild(forceStyle);
+                }
+                
+                forceStyle.textContent = `
+                    [data-element-id*="Task"] rect {
+                        stroke: ${isDark ? '#ffffff' : '#000000'} !important;
+                        fill: ${isDark ? '#1f2937' : '#ffffff'} !important;
+                        stroke-opacity: 1 !important;
+                    }
+                `;
+                
+                log('✅ Injected force-fix styles', true);
+                
+            } catch (e) {
+                log(`ERROR: ${e.message}`, true);
+            }
+        }
+        
+        function toggleTheme() {
+            try {
+                const iframe = document.getElementById('studio-frame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const themeBtn = iframeDoc.querySelector('[title="Toggle Theme"]');
+                
+                if (themeBtn) {
+                    themeBtn.click();
+                    log('Theme toggled', true);
+                    setTimeout(diagnose, 500);
+                } else {
+                    log('Theme button not found', true);
+                }
+            } catch (e) {
+                log(`ERROR: ${e.message}`, true);
+            }
+        }
+        
+        window.onload = () => {
+            log('Diagnostic tool ready. Create a Task and an Event, then run diagnostic.');
+        };
+    </script>
+</body>
+</html>
