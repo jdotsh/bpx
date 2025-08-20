@@ -1,15 +1,18 @@
 import Stripe from 'stripe'
 
-// Validate Stripe configuration
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY environment variable is required')
-}
+// Make Stripe optional - only initialize if keys are provided
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  // Use the latest stable Stripe API version
-  apiVersion: '2025-07-30.basil',
-  typescript: true,
-})
+export const stripe = stripeSecretKey 
+  ? new Stripe(stripeSecretKey, {
+      // Use the latest stable Stripe API version
+      apiVersion: '2025-07-30.basil',
+      typescript: true,
+    })
+  : null as any
+
+// Helper to check if Stripe is configured
+export const isStripeConfigured = () => !!stripeSecretKey
 
 // Pricing configuration
 export const PRICING_PLANS = {

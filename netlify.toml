@@ -7,7 +7,7 @@
   package = "@netlify/plugin-nextjs"
 
 [build.environment]
-  NODE_VERSION = "20.11.1"
+  NODE_VERSION = "20.12.0"
   NEXT_TELEMETRY_DISABLED = "1"
   # Disable secret scanning for public environment variables
   SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DATABASE_URL"

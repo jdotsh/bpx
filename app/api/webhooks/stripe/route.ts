@@ -2,15 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
-import { stripe } from '@/lib/stripe'
+import { stripe, isStripeConfigured } from '@/lib/stripe'
 import { createServerClient } from '@/lib/auth/server'
 
 // Force dynamic rendering for API routes that use authentication
 export const dynamic = 'force-dynamic'
 
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_placeholder'
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
 
 export async function POST(req: NextRequest) {
+  // Return early if Stripe is not configured
+  if (!isStripeConfigured()) {
+    return NextResponse.json({ 
+      error: 'Stripe is not configured. Webhooks are disabled.' 
+    }, { status: 501 })
+  }
+
   const body = await req.text()
   const signature = headers().get('stripe-signature')
 
@@ -234,4 +241,19 @@ function mapStripeStatus(
     default:
       return 'ACTIVE'
   }
+}
+
+// Add GET method for health checks
+export async function GET() {
+  if (!isStripeConfigured()) {
+    return NextResponse.json({ 
+      status: 'disabled',
+      message: 'Stripe is not configured'
+    })
+  }
+  
+  return NextResponse.json({ 
+    status: 'ready',
+    message: 'Stripe webhook endpoint is ready'
+  })
 }
