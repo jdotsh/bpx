@@ -10,15 +10,18 @@
       "page": "/",
       "matchers": [
         {
-          "regexp": "^/.*$",
-          "originalSource": "/:path*"
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!_next\\/static|_next\\/image|favicon.ico|public|api\\/health).*))(.json)?[\\/#\\?]?$",
+          "originalSource": "/((?!_next/static|_next/image|favicon.ico|public|api/health).*)"
         }
       ],
       "wasm": [],
       "assets": [],
       "env": {
-        "__NEXT_BUILD_ID": "development",
-        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "ew9s8+R3ethSplaymsQTHkN7Jk0N8PrWqOS1PKDRiUw="
+        "__NEXT_BUILD_ID": "_t7Gjplx4JN02vY-AamH8",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "48e545SJwZkQjAhwASIYQ4QchKAQK2ecQ3QKkjs2xy4=",
+        "__NEXT_PREVIEW_MODE_ID": "42f461f28b15055318517819b2885483",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "08ea9489a2db28390c93d9b53459d1295838a3d2a45851c68ab25025669d2b99",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "bea1548206fa3924147034d3ab21fb2e36a29d35b996aba29490175b8a371ff9"
       }
     }
   },
