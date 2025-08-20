@@ -1,94 +1,58 @@
-// Diagram Summary API - Optimized for Dashboard Performance
-// R2: API Foundations - ETag-enabled lightweight endpoint
-
+// Diagram Summary API - Lightweight endpoint for dashboard
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { requireUserId, requireResourceAccess } from '@/src/server/auth/getUser'
-import { withErrorHandler, NotFoundError } from '@/src/server/web/error'
-import { applyRateLimit, addRateLimitHeaders } from '@/src/server/web/ratelimit'
-import { makeVersionETag, isNotModified, createNotModifiedResponse, createETagResponse } from '@/src/server/web/etag'
-import type { DiagramSummary } from '@/src/server/schemas/diagram.dto'
+import { createServerClient } from '@/lib/auth/server'
 
-export const GET = withErrorHandler(async (
+export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
-) => {
-  const userId = await requireUserId()
-  await requireResourceAccess(params.id, 'diagram', 'read')
-  
-  const canProceed = await applyRateLimit(request, userId, 'read')
-  if (!canProceed) {
-    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
-  }
-  
-  // Ultra-efficient query - only summary data, no BPMN XML
-  const summary = await prisma.diagram.findFirst({
-    where: { 
-      id: params.id,
-      deletedAt: null,
-      OR: [
-        { ownerId: userId },
-        { 
-          project: {
-            OR: [
-              { ownerId: userId },
-              { collaborators: { some: { userId } } }
-            ]
-          }
-        }
-      ]
-    },
-    select: {
-      id: true,
-      title: true,
-      updatedAt: true,
-      version: true,
-      projectId: true,
-      thumbnailUrl: true,
-      metadata: true,
-      owner: {
-        select: {
-          name: true,
-          email: true
-        }
-      },
-      project: {
-        select: {
-          name: true
-        }
-      }
+) {
+  try {
+    const supabase = createServerClient()
+    
+    // Check authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-  })
-  
-  if (!summary) {
-    throw new NotFoundError('Diagram')
+    
+    // Get diagram summary
+    const { data: diagram, error } = await supabase
+      .from('diagrams')
+      .select(`
+        id,
+        name,
+        description,
+        updated_at,
+        project_id,
+        thumbnail_url,
+        version,
+        metadata
+      `)
+      .eq('id', params.id)
+      .eq('profile_id', user.id)
+      .single()
+    
+    if (error || !diagram) {
+      return NextResponse.json({ error: 'Diagram not found' }, { status: 404 })
+    }
+    
+    // Return summary data
+    return NextResponse.json({
+      id: diagram.id,
+      name: diagram.name,
+      description: diagram.description,
+      updatedAt: diagram.updated_at,
+      projectId: diagram.project_id,
+      thumbnailUrl: diagram.thumbnail_url,
+      version: diagram.version || 1,
+      elementCount: diagram.metadata?.elementCount || 0
+    })
+    
+  } catch (error) {
+    console.error('Error fetching diagram summary:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch diagram summary' },
+      { status: 500 }
+    )
   }
-  
-  // Create optimized summary response
-  const diagramSummary: DiagramSummary = {
-    id: summary.id,
-    title: summary.title,
-    updatedAt: summary.updatedAt.toISOString(),
-    version: summary.version,
-    projectId: summary.projectId,
-    thumbnailUrl: summary.thumbnailUrl || undefined,
-    lastEditor: summary.owner.name || summary.owner.email,
-    elementCount: (summary.metadata as any)?.elementCount as number || undefined
-  }
-  
-  // Version-based ETag for efficient caching
-  const etag = makeVersionETag(summary.version)
-  
-  // Check if client has current version
-  if (isNotModified(request, etag)) {
-    const response = createNotModifiedResponse()
-    addRateLimitHeaders(response.headers)
-    return response
-  }
-  
-  // Return fresh data with aggressive caching
-  const response = createETagResponse(diagramSummary, etag)
-  
-  addRateLimitHeaders(response.headers)
-  return response
-})
+}
