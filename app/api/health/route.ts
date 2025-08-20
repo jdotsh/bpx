@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { createServerClient } from '@/lib/auth/server'
 
 interface HealthCheck {
@@ -34,20 +33,33 @@ export async function GET(request: Request) {
   
   const checks: Record<string, HealthCheck> = {}
 
-  // Check database connection with timeout
+  // Check Supabase Database connection with timeout
   let dbLatency = 0
   try {
     const dbStart = Date.now()
-    await Promise.race([
-      prisma.$queryRaw`SELECT 1 as test`,
-      new Promise((_, reject) => 
+    const supabase = createServerClient()
+    
+    // Test database connection with a simple query
+    const { error } = await Promise.race([
+      supabase.from('profiles').select('count', { count: 'exact', head: true }),
+      new Promise<any>((_, reject) => 
         setTimeout(() => reject(new Error('Database timeout')), 5000)
       )
     ])
+    
     dbLatency = Date.now() - dbStart
-    checks.database = {
-      status: 'ok',
-      latency: dbLatency
+    
+    if (error) {
+      checks.database = {
+        status: 'error',
+        error: `Database error: ${error.message}`,
+        latency: dbLatency
+      }
+    } else {
+      checks.database = {
+        status: 'ok',
+        latency: dbLatency
+      }
     }
   } catch (error) {
     checks.database = {
@@ -89,46 +101,11 @@ export async function GET(request: Request) {
       latency: Date.now() - startTime
     }
   }
-  
-  // Check Redis (optional)
-  try {
-    if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-      const { Redis } = await import('@upstash/redis')
-      const redis = new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL,
-        token: process.env.UPSTASH_REDIS_REST_TOKEN,
-      })
-      const redisStart = Date.now()
-      await Promise.race([
-        redis.ping(),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Redis timeout')), 3000)
-        )
-      ])
-      checks.redis = {
-        status: 'ok',
-        latency: Date.now() - redisStart
-      }
-    } else {
-      checks.redis = {
-        status: 'degraded',
-        warning: 'Redis not configured (optional for caching)'
-      }
-    }
-  } catch (error) {
-    checks.redis = {
-      status: 'degraded',
-      warning: 'Redis unavailable (non-critical)',
-      error: error instanceof Error ? error.message : 'Redis connection failed'
-    }
-  }
 
   // Check environment variables
   const requiredEnvVars = [
-    'DATABASE_URL',
     'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'SUPABASE_SERVICE_ROLE_KEY'
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY'
   ]
   
   const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar])
@@ -155,8 +132,8 @@ export async function GET(request: Request) {
   const response: HealthStatus = {
     status: overallStatus,
     timestamp: new Date().toISOString(),
-    environment: process.env.NEXT_PUBLIC_ENVIRONMENT || 'development',
-    version: process.env.npm_package_version || '2.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    version: '2.0.0',
     uptime: process.uptime(),
     checks,
     metrics: {
@@ -183,7 +160,14 @@ export async function GET(request: Request) {
 // Quick readiness check for container orchestration
 export async function HEAD() {
   try {
-    await prisma.$queryRaw`SELECT 1`
+    const supabase = createServerClient()
+    const { error } = await supabase
+      .from('profiles')
+      .select('count', { count: 'exact', head: true })
+    
+    if (error) {
+      return new NextResponse(null, { status: 503 })
+    }
     return new NextResponse(null, { status: 200 })
   } catch {
     return new NextResponse(null, { status: 503 })

@@ -2,13 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
-import { prisma } from '@/lib/prisma'
+import { createServerClient } from '@/lib/auth/server'
 
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_placeholder'
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
-  const signature = headers().get('stripe-signature')!
+  const signature = headers().get('stripe-signature')
+
+  if (!signature) {
+    return NextResponse.json({ error: 'No signature' }, { status: 400 })
+  }
 
   let event: Stripe.Event
 
@@ -57,6 +61,7 @@ export async function POST(req: NextRequest) {
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string
+  const supabase = createServerClient()
   
   // Get the customer to find the user
   const customer = await stripe.customers.retrieve(customerId)
@@ -73,11 +78,13 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
   }
 
   // Find user by email and update their subscription
-  const profile = await prisma.profile.findUnique({
-    where: { email: userEmail }
-  })
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('email', userEmail)
+    .single()
 
-  if (!profile) {
+  if (error || !profile) {
     console.error('No profile found for email:', userEmail)
     return
   }
@@ -88,24 +95,24 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
   // Type assertion for Stripe properties that TypeScript doesn't recognize
   const currentPeriodEnd = (subscription as any).current_period_end as number
   
-  await prisma.subscription.upsert({
-    where: { profileId: profile.id },
-    update: {
-      stripeCustomerId: customerId,
-      stripeSubId: subscription.id,
+  // Upsert subscription
+  const { error: upsertError } = await supabase
+    .from('subscriptions')
+    .upsert({
+      profile_id: profile.id,
+      stripe_customer_id: customerId,
+      stripe_sub_id: subscription.id,
       plan,
       status: mapStripeStatus(subscription.status),
-      currentPeriodEnd: new Date(currentPeriodEnd * 1000)
-    },
-    create: {
-      profileId: profile.id,
-      stripeCustomerId: customerId,
-      stripeSubId: subscription.id,
-      plan,
-      status: mapStripeStatus(subscription.status),
-      currentPeriodEnd: new Date(currentPeriodEnd * 1000)
-    }
-  })
+      current_period_end: new Date(currentPeriodEnd * 1000).toISOString()
+    }, {
+      onConflict: 'profile_id'
+    })
+
+  if (upsertError) {
+    console.error('Failed to upsert subscription:', upsertError)
+    return
+  }
 
   console.log(`Subscription created for user ${userEmail}, plan: ${plan}`)
 }
@@ -113,28 +120,41 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const plan = mapPriceIdToPlan(subscription.items.data[0]?.price.id)
   const currentPeriodEnd = (subscription as any).current_period_end as number
+  const supabase = createServerClient()
   
-  await prisma.subscription.update({
-    where: { stripeSubId: subscription.id },
-    data: {
+  const { error } = await supabase
+    .from('subscriptions')
+    .update({
       plan,
       status: mapStripeStatus(subscription.status),
-      currentPeriodEnd: new Date(currentPeriodEnd * 1000)
-    }
-  })
+      current_period_end: new Date(currentPeriodEnd * 1000).toISOString()
+    })
+    .eq('stripe_sub_id', subscription.id)
+
+  if (error) {
+    console.error('Failed to update subscription:', error)
+    return
+  }
 
   console.log(`Subscription updated: ${subscription.id}, plan: ${plan}`)
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  await prisma.subscription.update({
-    where: { stripeSubId: subscription.id },
-    data: {
+  const supabase = createServerClient()
+  
+  const { error } = await supabase
+    .from('subscriptions')
+    .update({
       plan: 'FREE',
       status: 'CANCELED',
-      currentPeriodEnd: new Date()
-    }
-  })
+      current_period_end: new Date().toISOString()
+    })
+    .eq('stripe_sub_id', subscription.id)
+
+  if (error) {
+    console.error('Failed to cancel subscription:', error)
+    return
+  }
 
   console.log(`Subscription canceled: ${subscription.id}`)
 }
@@ -143,12 +163,18 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const subscriptionId = (invoice as any).subscription as string | null
   
   if (subscriptionId) {
-    await prisma.subscription.update({
-      where: { stripeSubId: subscriptionId },
-      data: {
+    const supabase = createServerClient()
+    
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({
         status: 'ACTIVE'
-      }
-    })
+      })
+      .eq('stripe_sub_id', subscriptionId)
+
+    if (error) {
+      console.error('Failed to update payment status:', error)
+    }
   }
 
   console.log(`Payment succeeded for invoice: ${invoice.id}`)
@@ -158,12 +184,18 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const subscriptionId = (invoice as any).subscription as string | null
   
   if (subscriptionId) {
-    await prisma.subscription.update({
-      where: { stripeSubId: subscriptionId },
-      data: {
+    const supabase = createServerClient()
+    
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({
         status: 'PAST_DUE'
-      }
-    })
+      })
+      .eq('stripe_sub_id', subscriptionId)
+
+    if (error) {
+      console.error('Failed to update payment status:', error)
+    }
   }
 
   console.log(`Payment failed for invoice: ${invoice.id}`)
