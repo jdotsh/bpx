@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+
 import { createServerClient } from '@/lib/auth/server'
 import { createUserProfile } from '@/lib/auth/server'
+
+// Force dynamic rendering for API routes that use authentication
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {

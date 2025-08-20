@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+
 import { getCurrentUser } from '@/lib/auth/server'
 import { DiagramService } from '@/lib/services/diagram'
 import { diagramIdSchema } from '@/lib/validations/diagram'
 import { z } from 'zod'
+
+// Force dynamic rendering for API routes that use authentication
+export const dynamic = 'force-dynamic'
 
 export async function GET(
   request: NextRequest,

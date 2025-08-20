@@ -1,1 +1,1 @@
-{"status":"healthy","service":"BPMN Core Routing Backend","timestamp":"2025-08-20T08:16:46.307Z","endpoints":{"diagrams":"/api/bpmn","export":"/api/bpmn/export","collaborate":"/api/bpmn/collaborate"}}
+{"status":"healthy","service":"BPMN Core Routing Backend","timestamp":"2025-08-20T08:27:00.464Z","endpoints":{"diagrams":"/api/bpmn","export":"/api/bpmn/export","collaborate":"/api/bpmn/collaborate"}}

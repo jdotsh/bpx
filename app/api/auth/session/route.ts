@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, getCurrentUser, getUserProfile } from '@/lib/auth/server'
 
+// Force dynamic rendering for this route since it uses authentication cookies
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = createServerClient()

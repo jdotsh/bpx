@@ -4,6 +4,9 @@ import { ProjectService } from '@/lib/services/project'
 import { updateProjectSchema, projectIdSchema } from '@/lib/validations/project'
 import { z } from 'zod'
 
+// Force dynamic rendering for API routes that use authentication
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }

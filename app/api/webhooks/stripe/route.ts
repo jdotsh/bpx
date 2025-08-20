@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 import { createServerClient } from '@/lib/auth/server'
+
+// Force dynamic rendering for API routes that use authentication
+export const dynamic = 'force-dynamic'
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_placeholder'
 

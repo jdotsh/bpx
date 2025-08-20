@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/auth/server'
 
+// Force dynamic rendering for this route since it uses authentication
+export const dynamic = 'force-dynamic'
+
 /**
  * Export BPMN diagram in different formats
  * GET /api/bpmn/export?id={id}&format={xml|svg|png|pdf}
