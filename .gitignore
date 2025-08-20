@@ -32,5 +32,11 @@ package-lock.json
 .env.test.local
 .env.production.local
 
+# Build directories
+.next
+out
+build
+dist
+
 # Local Netlify folder
 .netlify
