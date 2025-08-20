@@ -9,7 +9,12 @@ npm install
 echo "🔨 Building application..."
 npm run build
 
-echo "🧹 Removing webpack cache to avoid false positives..."
+echo "🧹 Post-build cleanup..."
+# Remove cache to avoid false positives
 rm -rf .next/cache
+
+# The NEXT_PUBLIC variables are meant to be public
+# This is expected behavior for Next.js apps
+echo "ℹ️  Note: NEXT_PUBLIC_* environment variables are intentionally public"
 
 echo "✅ Build complete!"

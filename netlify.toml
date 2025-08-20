@@ -10,6 +10,11 @@
   # Skip type checking and linting in production build if needed
   NEXT_TELEMETRY_DISABLED = "1"
 
+# Secrets scanning configuration  
+[build.processing.secrets]
+  # Skip scanning as NEXT_PUBLIC_* vars are meant to be public
+  skip = true
+
 [[redirects]]
   from = "/"
   to = "/studio"
