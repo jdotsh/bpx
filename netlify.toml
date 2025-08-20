@@ -1,16 +1,29 @@
 [build]
   command = "npm run build"
   publish = ".next"
+  ignore = "false"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
 [build.environment]
   NODE_VERSION = "20"
-  # Skip type checking and linting in production build if needed
   NEXT_TELEMETRY_DISABLED = "1"
-  # These are intentionally public environment variables
-  REVIEW_ID = "NEXT_PUBLIC_VARS_ARE_PUBLIC"
+
+# Post-processing to handle false positives
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.images]
+  compress = true
 
 [[redirects]]
   from = "/"
