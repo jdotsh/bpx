@@ -1,5 +1,5 @@
 [build]
-  command = "./scripts/netlify-build.sh"
+  command = "npm run build && rm -rf .next/cache"
   publish = ".next"
 
 [[plugins]]
