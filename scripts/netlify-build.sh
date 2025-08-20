@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "🧹 Cleaning build cache..."
-rm -rf .next .netlify node_modules/.cache
+echo "🧹 Cleaning Next.js build cache..."
+rm -rf .next node_modules/.cache
 
 echo "📦 Installing dependencies..."
 npm ci
