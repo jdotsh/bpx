@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && rm -rf .next/cache"
+  command = "npm run build"
   publish = ".next"
 
 [[plugins]]
@@ -9,11 +9,8 @@
   NODE_VERSION = "20.9.0"
   # Skip type checking and linting in production build if needed
   NEXT_TELEMETRY_DISABLED = "1"
-
-# Secrets scanning configuration  
-[build.processing.secrets]
-  # Skip scanning as NEXT_PUBLIC_* vars are meant to be public
-  skip = true
+  # These are intentionally public environment variables
+  REVIEW_ID = "NEXT_PUBLIC_VARS_ARE_PUBLIC"
 
 [[redirects]]
   from = "/"
