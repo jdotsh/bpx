@@ -187,7 +187,7 @@ export function BpmnStudioNoSSR({ diagramId, projectId }: Props) {
 
   const handleUndo = () => {
     try {
-      const commandStack = designer?.getCommandStack()
+      const commandStack = designer?.getCommandStack() as any
       if (commandStack && typeof commandStack.undo === 'function') {
         commandStack.undo()
       }
@@ -198,7 +198,7 @@ export function BpmnStudioNoSSR({ diagramId, projectId }: Props) {
 
   const handleRedo = () => {
     try {
-      const commandStack = designer?.getCommandStack()
+      const commandStack = designer?.getCommandStack() as any
       if (commandStack && typeof commandStack.redo === 'function') {
         commandStack.redo()
       }
@@ -209,7 +209,7 @@ export function BpmnStudioNoSSR({ diagramId, projectId }: Props) {
 
   const handleZoomIn = () => {
     try {
-      const canvas = designer?.getCanvas()
+      const canvas = designer?.getCanvas() as any
       if (canvas && typeof canvas.zoom === 'function') {
         const currentZoom = canvas.zoom()
         const newZoom = Math.min(currentZoom * 1.1, 4)
@@ -223,7 +223,7 @@ export function BpmnStudioNoSSR({ diagramId, projectId }: Props) {
 
   const handleZoomOut = () => {
     try {
-      const canvas = designer?.getCanvas()
+      const canvas = designer?.getCanvas() as any
       if (canvas && typeof canvas.zoom === 'function') {
         const currentZoom = canvas.zoom()
         const newZoom = Math.max(currentZoom * 0.9, 0.2)
@@ -237,7 +237,7 @@ export function BpmnStudioNoSSR({ diagramId, projectId }: Props) {
 
   const handleZoomReset = () => {
     try {
-      const canvas = designer?.getCanvas()
+      const canvas = designer?.getCanvas() as any
       if (canvas && typeof canvas.zoom === 'function') {
         canvas.zoom('fit-viewport')
         setZoomLevel(100)

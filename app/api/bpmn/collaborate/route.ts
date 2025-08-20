@@ -106,9 +106,10 @@ setInterval(() => {
   const now = new Date()
   const timeout = 30 * 60 * 1000 // 30 minutes
   
-  for (const [id, session] of collaborationSessions.entries()) {
+  // Convert to array to avoid iteration issues
+  Array.from(collaborationSessions.entries()).forEach(([id, session]) => {
     if (now.getTime() - session.lastActivity.getTime() > timeout) {
       collaborationSessions.delete(id)
     }
-  }
+  })
 }, 5 * 60 * 1000) // Check every 5 minutes

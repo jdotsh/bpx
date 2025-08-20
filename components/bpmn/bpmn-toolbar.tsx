@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { ExportDropdown } from './export-dropdown'
 import { 
   Download, 
   Upload,
@@ -26,13 +27,14 @@ import {
   AlignCenterHorizontal,
   AlignEndHorizontal,
   Presentation,
-  Grid3X3
+  Grid3X3,
+  Mouse
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface BpmnToolbarProps {
   onImport?: () => void
-  onExport?: () => void
+  onExport?: (format: 'bpmn' | 'xml' | 'svg' | 'png') => void
   onSave?: () => void
   onOpenFolder?: () => void
   onPreview?: () => void
@@ -54,6 +56,7 @@ interface BpmnToolbarProps {
   onToggleTheme?: () => void
   onToggleGrid?: () => void
   onMeetingMode?: () => void
+  onToggleScrollZoom?: () => void
   theme?: 'light' | 'dark'
   zoomLevel?: number
   canUndo?: boolean
@@ -62,6 +65,7 @@ interface BpmnToolbarProps {
   isMeetingMode?: boolean
   isMinimapOpen?: boolean
   showGrid?: boolean
+  scrollZoomEnabled?: boolean
 }
 
 export const BpmnToolbar = memo(function BpmnToolbar({
@@ -88,6 +92,7 @@ export const BpmnToolbar = memo(function BpmnToolbar({
   onToggleTheme,
   onToggleGrid,
   onMeetingMode,
+  onToggleScrollZoom,
   theme = 'light',
   zoomLevel = 100,
   canUndo = false,
@@ -95,7 +100,8 @@ export const BpmnToolbar = memo(function BpmnToolbar({
   disabled = false,
   isMeetingMode = false,
   isMinimapOpen = false,
-  showGrid = false
+  showGrid = false,
+  scrollZoomEnabled = true
 }: BpmnToolbarProps) {
   const [isFitActive, setIsFitActive] = useState(false)
 
@@ -159,7 +165,7 @@ export const BpmnToolbar = memo(function BpmnToolbar({
             e.target.value = ''
           }}
         />
-        <ToolbarButton icon={Download} onClick={onExport} title="Export" />
+        <ExportDropdown onExport={onExport || (() => {})} disabled={disabled} />
         <ToolbarButton icon={Eye} onClick={onPreview} title="Preview" />
         <ToolbarButton icon={Play} onClick={onRun} title="Run Process" />
       </div>
@@ -193,6 +199,12 @@ export const BpmnToolbar = memo(function BpmnToolbar({
           }} 
           title="Fit to Viewport"
           isActive={isFitActive}
+        />
+        <ToolbarButton 
+          icon={Mouse} 
+          onClick={onToggleScrollZoom} 
+          title={scrollZoomEnabled ? "Disable Scroll Zoom" : "Enable Scroll Zoom"}
+          isActive={scrollZoomEnabled}
         />
         <ToolbarButton 
           icon={Map} 

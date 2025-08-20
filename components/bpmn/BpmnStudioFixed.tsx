@@ -6,6 +6,7 @@ import { BpmnToolbar } from './bpmn-toolbar'
 import { BpmnElementsPalette } from './bpmn-elements-palette'
 import { XmlViewerModal } from './XmlViewerModal'
 import { useTheme } from '@/components/theme-provider'
+import { exportDiagram } from '@/lib/bpmn/export-service'
 
 // NO CSS imports here - they are in globals.css
 
@@ -50,6 +51,7 @@ export function BpmnStudioFixed() {
   const [showXmlViewer, setShowXmlViewer] = useState(false)
   const [currentXml, setCurrentXml] = useState('')
   const [selectedElements, setSelectedElements] = useState<any[]>([])
+  const [scrollZoomEnabled, setScrollZoomEnabled] = useState(true)
 
   // Helper function to apply styles (needs to be defined before useEffect)
   const applyBpmnStyles = useCallback((modeler: BpmnModeler | null, currentTheme: 'light' | 'dark') => {
@@ -875,11 +877,12 @@ export function BpmnStudioFixed() {
         // Add keyboard shortcuts
         const keyboard = modeler.get('keyboard') as any
         const editorActions = modeler.get('editorActions') as any
+        const currentModeler = modeler // Capture modeler in local variable
         
-        if (keyboard && editorActions) {
+        if (keyboard && editorActions && currentModeler) {
           // Register Ctrl+A for select all
           editorActions.register('selectAll', () => {
-            const elementRegistry = modeler.get('elementRegistry') as any
+            const elementRegistry = currentModeler.get('elementRegistry') as any
             const allElements = elementRegistry.filter((element: any) => {
               return element.type !== 'label' && 
                      element.type !== 'bpmn:SequenceFlow' &&
@@ -902,12 +905,12 @@ export function BpmnStudioFixed() {
               }
               
               // Get the replace menu module
-              const popupMenu = modeler.get('popupMenu') as any
-              const replaceMenuProvider = modeler.get('replaceMenuProvider') as any
+              const popupMenu = currentModeler.get('popupMenu') as any
+              const replaceMenuProvider = currentModeler.get('replaceMenuProvider') as any
               
               if (popupMenu && replaceMenuProvider) {
                 // Get the position of the selected element
-                const elementRegistry = modeler.get('elementRegistry') as any
+                const elementRegistry = currentModeler.get('elementRegistry') as any
                 const elementShape = elementRegistry.get(element.id)
                 
                 if (elementShape) {
@@ -928,7 +931,7 @@ export function BpmnStudioFixed() {
                 }
               } else {
                 // Fallback: Try to trigger the replace tool directly
-                const replacePreview = modeler.get('replacePreview') as any
+                const replacePreview = currentModeler.get('replacePreview') as any
                 if (replacePreview) {
                   replacePreview.toggle()
                 }
@@ -968,8 +971,8 @@ export function BpmnStudioFixed() {
         // Apply initial styles
         applyBpmnStyles(modeler, theme)
         
-        // Add a global keyboard listener for spacebar (fallback)
-        const handleGlobalKeydown = (e: KeyboardEvent) => {
+        // Attach the global listener for spacebar
+        const spacebarHandler = (e: KeyboardEvent) => {
           // Only handle spacebar when canvas is focused
           if (e.key === ' ' && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
             const activeElement = document.activeElement
@@ -1001,11 +1004,11 @@ export function BpmnStudioFixed() {
                 console.log('Spacebar pressed with element selected:', element.type)
                 
                 // Try to open replace menu
-                const popupMenu = modeler.get('popupMenu') as any
-                const replaceMenuProvider = modeler.get('replaceMenuProvider') as any
+                const popupMenu = currentModeler.get('popupMenu') as any
+                const replaceMenuProvider = currentModeler.get('replaceMenuProvider') as any
                 
                 if (popupMenu && replaceMenuProvider) {
-                  const elementRegistry = modeler.get('elementRegistry') as any
+                  const elementRegistry = currentModeler.get('elementRegistry') as any
                   const elementShape = elementRegistry.get(element.id)
                   
                   if (elementShape) {
@@ -1027,11 +1030,16 @@ export function BpmnStudioFixed() {
           }
         }
         
-        // Attach the global listener
-        document.addEventListener('keydown', handleGlobalKeydown)
-        
-        // Store reference for cleanup
-        modelerRef.current._spacebarHandler = handleGlobalKeydown
+        // Defer attaching the event listener
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.document.addEventListener('keydown', spacebarHandler)
+            // Store reference for cleanup
+            if (modelerRef.current) {
+              (modelerRef.current as any)._spacebarHandler = spacebarHandler
+            }
+          }
+        }, 0)
         
         // Apply initial grid state
         const canvas = modeler.get('canvas') as any
@@ -1153,8 +1161,8 @@ export function BpmnStudioFixed() {
       if (modeler) {
         try {
           // Remove global keyboard handler
-          if (modeler._spacebarHandler) {
-            document.removeEventListener('keydown', modeler._spacebarHandler)
+          if ((modeler as any)._spacebarHandler) {
+            document.removeEventListener('keydown', (modeler as any)._spacebarHandler)
           }
           modeler.destroy()
         } catch (e) {
@@ -1213,6 +1221,17 @@ export function BpmnStudioFixed() {
     }
   }, [theme, isReady, showGrid, applyBpmnStyles])
 
+  // Handle scroll zoom state changes
+  useEffect(() => {
+    if (!modelerRef.current) return
+    
+    const zoomScroll = modelerRef.current.get('zoomScroll') as any
+    if (zoomScroll) {
+      // The zoomScroll module uses toggle method to enable/disable
+      zoomScroll.toggle(scrollZoomEnabled)
+    }
+  }, [scrollZoomEnabled])
+
   // Handlers
   const handleSave = useCallback(async () => {
     if (!modelerRef.current) return
@@ -1228,59 +1247,97 @@ export function BpmnStudioFixed() {
     }
   }, [])
 
-  const handleExport = useCallback(async () => {
+  const handleExport = useCallback(async (format: 'bpmn' | 'xml' | 'svg' | 'png' = 'bpmn') => {
     if (!modelerRef.current) return
     try {
-      const { xml } = await modelerRef.current.saveXML({ format: true })
-      
-      // Show export format options
-      const format = prompt('Export format: xml, json, or yaml?', 'xml')?.toLowerCase()
-      
-      let content = xml || ''
-      let filename = 'diagram.bpmn'
-      let mimeType = 'text/xml'
-      
-      if (format === 'json') {
-        // Convert XML to JSON representation
-        const parser = new DOMParser()
-        const xmlDoc = parser.parseFromString(xml || '', 'text/xml')
-        const jsonData = {
-          type: 'bpmn:definitions',
-          process: xmlDoc.querySelector('process')?.getAttribute('id') || 'Process_1',
-          elements: Array.from(xmlDoc.querySelectorAll('*[id]')).map(el => ({
-            id: el.getAttribute('id'),
-            type: el.tagName,
-            name: el.getAttribute('name') || ''
-          }))
+      if (format === 'svg') {
+        // Export as SVG
+        const canvas = modelerRef.current.get('canvas') as any
+        const svg = canvas._svg || canvas.getContainer()?.querySelector('svg')
+        
+        if (svg) {
+          // Clone the SVG to avoid modifying the original
+          const svgClone = svg.cloneNode(true) as SVGElement
+          
+          // Add necessary namespaces
+          svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+          svgClone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+          
+          // Get the SVG string
+          const svgString = new XMLSerializer().serializeToString(svgClone)
+          const blob = new Blob([svgString], { type: 'image/svg+xml' })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = 'diagram.svg'
+          a.click()
+          URL.revokeObjectURL(url)
         }
-        content = JSON.stringify(jsonData, null, 2)
-        filename = 'diagram.json'
-        mimeType = 'application/json'
-      } else if (format === 'yaml' || format === 'yml') {
-        // Simple YAML conversion (would need proper library for production)
-        const parser = new DOMParser()
-        const xmlDoc = parser.parseFromString(xml || '', 'text/xml')
-        let yamlContent = 'type: bpmn:definitions\n'
-        yamlContent += `process: ${xmlDoc.querySelector('process')?.getAttribute('id') || 'Process_1'}\n`
-        yamlContent += 'elements:\n'
-        xmlDoc.querySelectorAll('*[id]').forEach(el => {
-          yamlContent += `  - id: ${el.getAttribute('id')}\n`
-          yamlContent += `    type: ${el.tagName}\n`
-          const name = el.getAttribute('name')
-          if (name) yamlContent += `    name: ${name}\n`
-        })
-        content = yamlContent
-        filename = 'diagram.yaml'
-        mimeType = 'text/yaml'
+      } else if (format === 'png') {
+        // Export as PNG
+        const canvas = modelerRef.current.get('canvas') as any
+        const svg = canvas._svg || canvas.getContainer()?.querySelector('svg')
+        
+        if (svg) {
+          // Get SVG dimensions
+          const bbox = svg.getBBox()
+          const width = bbox.width + bbox.x + 50
+          const height = bbox.height + bbox.y + 50
+          
+          // Create canvas element
+          const canvasElement = document.createElement('canvas')
+          canvasElement.width = width
+          canvasElement.height = height
+          const ctx = canvasElement.getContext('2d')
+          
+          if (ctx) {
+            // Set white background
+            ctx.fillStyle = 'white'
+            ctx.fillRect(0, 0, width, height)
+            
+            // Convert SVG to data URL
+            const svgClone = svg.cloneNode(true) as SVGElement
+            svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+            svgClone.setAttribute('width', String(width))
+            svgClone.setAttribute('height', String(height))
+            
+            const svgString = new XMLSerializer().serializeToString(svgClone)
+            const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+            const svgUrl = URL.createObjectURL(svgBlob)
+            
+            // Load SVG into image and draw to canvas
+            const img = new Image()
+            img.onload = () => {
+              ctx.drawImage(img, 0, 0)
+              URL.revokeObjectURL(svgUrl)
+              
+              // Convert canvas to PNG
+              canvasElement.toBlob((blob) => {
+                if (blob) {
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = 'diagram.png'
+                  a.click()
+                  URL.revokeObjectURL(url)
+                }
+              }, 'image/png')
+            }
+            img.src = svgUrl
+          }
+        }
+      } else {
+        // Export as BPMN/XML
+        const { xml } = await modelerRef.current.saveXML({ format: true })
+        const filename = format === 'xml' ? 'diagram.xml' : 'diagram.bpmn'
+        const blob = new Blob([xml || ''], { type: 'text/xml' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        a.click()
+        URL.revokeObjectURL(url)
       }
-      
-      const blob = new Blob([content], { type: mimeType })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = filename
-      a.click()
-      URL.revokeObjectURL(url)
     } catch (err) {
       console.error('Export error:', err)
     }
@@ -1698,6 +1755,26 @@ export function BpmnStudioFixed() {
     })
   }, [])
 
+  // Scroll zoom toggle handler
+  const handleToggleScrollZoom = useCallback(() => {
+    setScrollZoomEnabled(prev => {
+      const newValue = !prev
+      if (modelerRef.current) {
+        const zoomScroll = modelerRef.current.get('zoomScroll') as any
+        if (zoomScroll) {
+          if (newValue) {
+            // Enable scroll zoom
+            zoomScroll.toggle(true)
+          } else {
+            // Disable scroll zoom
+            zoomScroll.toggle(false)
+          }
+        }
+      }
+      return newValue
+    })
+  }, [])
+
   // Handle palette actions
   const handlePaletteAction = useCallback((action: string, event: Event | DragEvent) => {
     if (!modelerRef.current) return
@@ -1905,6 +1982,7 @@ export function BpmnStudioFixed() {
         onToggleMinimap={handleToggleMinimap}
         onToggleLanguage={handleToggleLanguage}
         onToggleGrid={handleToggleGrid}
+        onToggleScrollZoom={handleToggleScrollZoom}
         theme={theme}
         zoomLevel={zoomLevel}
         canUndo={canUndo}
@@ -1913,6 +1991,7 @@ export function BpmnStudioFixed() {
         isMeetingMode={isMeetingMode}
         isMinimapOpen={isMinimapOpen}
         showGrid={showGrid}
+        scrollZoomEnabled={scrollZoomEnabled}
       />
 
       {/* Main Content Area with Custom Collapsible Palette */}

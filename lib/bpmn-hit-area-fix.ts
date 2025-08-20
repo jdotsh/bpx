@@ -72,7 +72,7 @@ export function fixBpmnHitAreas(modeler: any) {
           // Ensure the hit area covers the full element
           const visual = element.querySelector('.djs-visual')
           if (visual) {
-            const bbox = (visual as SVGElement).getBBox?.()
+            const bbox = (visual as any).getBBox?.()
             if (bbox) {
               rect.setAttribute('x', String(bbox.x))
               rect.setAttribute('y', String(bbox.y))
