@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { Diagram } from '@prisma/client'
 import type { DiagramWithVersions } from '@/lib/services/diagram'
+
+// Temporary type definition (Prisma removed)
+type Diagram = any
 
 interface DiagramSaveData {
   title?: string

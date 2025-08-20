@@ -18,7 +18,7 @@ export async function GET(
     }
 
     const { id } = diagramIdSchema.parse(params)
-    const diagram = await DiagramService.getDiagramById(id, user.id)
+    const diagram = await DiagramService.getDiagram(user.id, id)
 
     if (!diagram) {
       return NextResponse.json(
@@ -67,10 +67,10 @@ export async function PUT(
     let diagram
     if (isSaveOperation) {
       const data = saveDiagramSchema.parse(body)
-      diagram = await DiagramService.saveDiagramContent(id, user.id, data, false)
+      diagram = await DiagramService.saveDiagram(user.id, id, data)
     } else {
       const data = updateDiagramSchema.parse(body)
-      diagram = await DiagramService.updateDiagram(id, user.id, data)
+      diagram = await DiagramService.updateDiagram(user.id, id, data)
     }
 
     if (!diagram) {
@@ -119,7 +119,7 @@ export async function DELETE(
     }
 
     const { id } = diagramIdSchema.parse(params)
-    const success = await DiagramService.deleteDiagram(id, user.id)
+    const success = await DiagramService.deleteDiagram(user.id, id)
 
     if (!success) {
       return NextResponse.json(

@@ -18,18 +18,18 @@ export async function GET(
     }
 
     const { id } = diagramIdSchema.parse(params)
-    const xmlContent = await DiagramService.getDiagramXml(id, user.id)
+    const diagram = await DiagramService.getDiagram(user.id, id)
 
-    if (!xmlContent) {
+    if (!diagram || !diagram.content) {
       return NextResponse.json(
         { error: 'Not Found', message: 'Diagram XML not found or access denied' },
         { status: 404 }
       )
     }
 
+    const xmlContent = diagram.content
     // Get diagram title for filename
-    const diagram = await DiagramService.getDiagramById(id, user.id)
-    const filename = sanitizeFilename(diagram?.title || 'diagram')
+    const filename = sanitizeFilename(diagram?.name || diagram?.title || 'diagram')
 
     return new NextResponse(xmlContent, {
       status: 200,

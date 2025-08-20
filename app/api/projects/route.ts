@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const query = listQuerySchema.parse(Object.fromEntries(searchParams))
 
-    const projects = await ProjectService.getUserProjects(user.id, query.page, query.limit)
+    const projects = await ProjectService.listProjects(user.id)
 
     return NextResponse.json({
       data: projects,

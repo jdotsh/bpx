@@ -8,7 +8,7 @@ import {
   cpjToBpmnXml,
   PerformanceOptimizer 
 } from '../services/nlp2bpmn';
-import { prisma } from '@/lib/prisma';
+// import { prisma } from '@/lib/prisma'; // Prisma removed
 
 const optimizer = new PerformanceOptimizer();
 

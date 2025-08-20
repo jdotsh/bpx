@@ -18,7 +18,7 @@ export async function GET(
     }
 
     const { id } = projectIdSchema.parse(params)
-    const project = await ProjectService.getProjectById(id, user.id)
+    const project = await ProjectService.getProject(user.id, id)
 
     if (!project) {
       return NextResponse.json(
@@ -62,7 +62,7 @@ export async function PUT(
     const body = await request.json()
     const data = updateProjectSchema.parse(body)
 
-    const project = await ProjectService.updateProject(id, user.id, data)
+    const project = await ProjectService.updateProject(user.id, id, data)
     if (!project) {
       return NextResponse.json(
         { error: 'Update Failed', message: 'Project not found or access denied' },
@@ -109,7 +109,7 @@ export async function DELETE(
     }
 
     const { id } = projectIdSchema.parse(params)
-    const success = await ProjectService.deleteProject(id, user.id)
+    const success = await ProjectService.deleteProject(user.id, id)
 
     if (!success) {
       return NextResponse.json(

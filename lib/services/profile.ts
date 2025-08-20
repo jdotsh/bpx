@@ -1,130 +1,131 @@
-import { prisma } from '@/lib/prisma'
+// Temporary stub - Prisma removed, Supabase migration in progress
 import { createServerClient } from '@/lib/auth/server'
-import type { Profile, Subscription } from '@prisma/client'
 
-export interface ProfileWithSubscription extends Profile {
-  subscription: Subscription | null
+export interface ProfileWithSubscription {
+  id: string
+  email: string
+  displayName?: string
+  avatarUrl?: string
+  subscription?: any
 }
 
 export class ProfileService {
   
   static async getOrCreateProfile(userId: string): Promise<ProfileWithSubscription | null> {
-    try {
-      // Try to get existing profile
-      let profile = await prisma.profile.findUnique({
-        where: { id: userId },
-        include: { subscription: true }
-      })
+    const supabase = createServerClient()
+    
+    // Try to get existing profile
+    let { data: profile } = await supabase
+      .from('profiles')
+      .select(`
+        *,
+        subscription:subscriptions(*)
+      `)
+      .eq('id', userId)
+      .single()
 
-      if (!profile) {
-        // Get user info from Supabase
-        const supabase = createServerClient()
-        const { data: { user }, error } = await supabase.auth.getUser()
-        
-        if (error || !user || user.id !== userId) {
-          return null
-        }
-
-        // Create new profile with free subscription
-        profile = await prisma.profile.create({
-          data: {
+    if (!profile) {
+      // Get user info from Supabase auth
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // Create new profile
+        const { data: newProfile } = await supabase
+          .from('profiles')
+          .insert({
             id: userId,
-            email: user.email!,
-            name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-            avatarUrl: user.user_metadata?.avatar_url,
-            subscription: {
-              create: {
-                stripeCustomerId: `temp_${userId}`,
-                plan: 'FREE',
-                status: 'ACTIVE',
-                currentPeriodEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
-              }
-            }
-          },
-          include: { subscription: true }
-        })
+            email: user.email,
+            display_name: user.user_metadata?.display_name || user.email?.split('@')[0],
+            avatar_url: user.user_metadata?.avatar_url
+          })
+          .select(`
+            *,
+            subscription:subscriptions(*)
+          `)
+          .single()
+        
+        profile = newProfile
       }
-
-      return profile
-    } catch (error) {
-      console.error('Error getting/creating profile:', error)
-      return null
     }
-  }
 
+    return profile
+  }
+  
+  static async getProfile(userId: string): Promise<any> {
+    const supabase = createServerClient()
+    
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select(`
+        *,
+        subscription:subscriptions(*)
+      `)
+      .eq('id', userId)
+      .single()
+
+    return profile
+  }
+  
   static async updateProfile(
     userId: string, 
-    data: Partial<Pick<Profile, 'name' | 'avatarUrl'>>
-  ): Promise<Profile | null> {
-    try {
-      const profile = await prisma.profile.update({
-        where: { id: userId },
-        data
-      })
-      return profile
-    } catch (error) {
-      console.error('Error updating profile:', error)
-      return null
-    }
+    data: any
+  ): Promise<any> {
+    const supabase = createServerClient()
+    
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .update(data)
+      .eq('id', userId)
+      .select()
+      .single()
+
+    return profile
   }
+  
+  static async createProfile(data: any): Promise<any> {
+    const supabase = createServerClient()
+    
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .insert(data)
+      .select()
+      .single()
 
-  static async getProfileById(userId: string): Promise<ProfileWithSubscription | null> {
-    try {
-      const profile = await prisma.profile.findUnique({
-        where: { id: userId },
-        include: { subscription: true }
-      })
-      return profile
-    } catch (error) {
-      console.error('Error getting profile by ID:', error)
-      return null
-    }
+    return profile
   }
+  
+  static async getProfileByEmail(email: string): Promise<any> {
+    const supabase = createServerClient()
+    
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('email', email)
+      .single()
 
-  static async hasActivePremiumSubscription(userId: string): Promise<boolean> {
-    try {
-      const subscription = await prisma.subscription.findFirst({
-        where: {
-          profileId: userId,
-          status: 'ACTIVE',
-          plan: { in: ['PRO', 'ENTERPRISE'] },
-          currentPeriodEnd: { gt: new Date() }
-        }
-      })
-      return !!subscription
-    } catch (error) {
-      console.error('Error checking premium subscription:', error)
-      return false
-    }
+    return profile
   }
+  
+  static async deleteProfile(userId: string): Promise<boolean> {
+    const supabase = createServerClient()
+    
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', userId)
 
-  static async getUserStats(userId: string) {
-    try {
-      const [projectCount, diagramCount] = await Promise.all([
-        prisma.project.count({
-          where: { 
-            ownerId: userId,
-            deletedAt: null 
-          }
-        }),
-        prisma.diagram.count({
-          where: { 
-            ownerId: userId,
-            deletedAt: null 
-          }
-        })
-      ])
+    return !error
+  }
+  
+  static async getSubscription(userId: string): Promise<any> {
+    const supabase = createServerClient()
+    
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('profile_id', userId)
+      .single()
 
-      return {
-        projectCount,
-        diagramCount
-      }
-    } catch (error) {
-      console.error('Error getting user stats:', error)
-      return {
-        projectCount: 0,
-        diagramCount: 0
-      }
-    }
+    return subscription
   }
 }

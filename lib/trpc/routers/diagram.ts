@@ -3,7 +3,7 @@ import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
 
 export const diagramRouter = router({
-  // List user's diagrams
+  // List user's diagrams - Temporarily stubbed (Prisma removed)
   list: protectedProcedure
     .input(z.object({
       projectId: z.string().optional(),
@@ -11,197 +11,69 @@ export const diagramRouter = router({
       cursor: z.string().optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const diagrams = await ctx.db.diagram.findMany({
-        where: {
-          ownerId: ctx.userId!,
-          projectId: input.projectId!,
-          deletedAt: null,
-        },
-        take: input.limit + 1,
-        cursor: input.cursor ? { id: input.cursor } : undefined,
-        orderBy: { updatedAt: 'desc' },
-        select: {
-          id: true,
-          title: true,
-          thumbnailUrl: true,
-          updatedAt: true,
-          version: true,
-        },
-      })
-
-      let nextCursor: string | undefined
-      if (diagrams.length > input.limit) {
-        const nextItem = diagrams.pop()
-        nextCursor = nextItem!.id
-      }
-
+      // TODO: Implement with Supabase
       return {
-        diagrams,
-        nextCursor,
+        diagrams: [],
+        nextCursor: undefined,
       }
     }),
 
-  // Get single diagram
+  // Get single diagram - Temporarily stubbed
   get: protectedProcedure
     .input(z.object({
       id: z.string(),
     }))
     .query(async ({ ctx, input }) => {
-      const diagram = await ctx.db.diagram.findFirst({
-        where: {
-          id: input.id,
-          ownerId: ctx.userId!,
-          deletedAt: null,
-        },
+      // TODO: Implement with Supabase
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Diagram not found (stub)',
       })
-
-      if (!diagram) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Diagram not found',
-        })
-      }
-
-      return diagram
     }),
 
-  // Create new diagram
+  // Create diagram - Temporarily stubbed
   create: protectedProcedure
     .input(z.object({
-      title: z.string().min(1).max(200),
-      bpmnXml: z.string(),
-      projectId: z.string().optional(),
-      thumbnailUrl: z.string().optional(),
+      title: z.string().min(1).max(255),
+      projectId: z.string(),
+      content: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      // Check diagram limit for free users
-      // TODO: Check subscription status
-      const count = await ctx.db.diagram.count({
-        where: {
-          ownerId: ctx.userId!,
-          deletedAt: null,
-        },
-      })
-
-      if (count >= 3) {
-        // TODO: Check if user is on paid plan
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Free plan limited to 3 diagrams. Please upgrade to Pro.',
-        })
+      // TODO: Implement with Supabase
+      return {
+        id: 'stub-id',
+        title: input.title,
+        projectId: input.projectId,
+        content: input.content || '',
+        ownerId: ctx.userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
-
-      const diagram = await ctx.db.diagram.create({
-        data: {
-          title: input.title,
-          bpmnXml: input.bpmnXml,
-          thumbnailUrl: input.thumbnailUrl,
-          ownerId: ctx.userId!,
-          projectId: input.projectId!,
-          version: 1,
-        },
-      })
-
-      // Create initial version
-      await ctx.db.diagramVersion.create({
-        data: {
-          diagramId: diagram.id,
-          revNumber: 1,
-          bpmnXml: input.bpmnXml,
-          authorId: ctx.userId!,
-          changeMessage: 'Initial version',
-        },
-      })
-
-      return diagram
     }),
 
-  // Update diagram (with auto-save)
+  // Update diagram - Temporarily stubbed
   update: protectedProcedure
     .input(z.object({
       id: z.string(),
-      title: z.string().min(1).max(200).optional(),
-      bpmnXml: z.string().optional(),
+      title: z.string().min(1).max(255).optional(),
+      content: z.string().optional(),
       thumbnailUrl: z.string().optional(),
-      version: z.number(), // For optimistic locking
     }))
     .mutation(async ({ ctx, input }) => {
-      // Check ownership and version
-      const existing = await ctx.db.diagram.findFirst({
-        where: {
-          id: input.id,
-          ownerId: ctx.userId!,
-          deletedAt: null,
-        },
-      })
-
-      if (!existing) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Diagram not found',
-        })
+      // TODO: Implement with Supabase
+      return {
+        id: input.id,
+        updatedAt: new Date(),
       }
-
-      if (existing.version !== input.version) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'Diagram was modified elsewhere. Please refresh.',
-        })
-      }
-
-      // Update diagram
-      const updated = await ctx.db.diagram.update({
-        where: { id: input.id },
-        data: {
-          title: input.title,
-          bpmnXml: input.bpmnXml,
-          thumbnailUrl: input.thumbnailUrl,
-          version: { increment: 1 },
-        },
-      })
-
-      // Create version snapshot if XML changed
-      if (input.bpmnXml && input.bpmnXml !== existing.bpmnXml) {
-        await ctx.db.diagramVersion.create({
-          data: {
-            diagramId: updated.id,
-            revNumber: updated.version,
-            bpmnXml: input.bpmnXml,
-            authorId: ctx.userId!,
-            changeMessage: 'Auto-saved',
-          },
-        })
-      }
-
-      return updated
     }),
 
-  // Delete diagram (soft delete)
+  // Delete diagram - Temporarily stubbed
   delete: protectedProcedure
     .input(z.object({
       id: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const diagram = await ctx.db.diagram.findFirst({
-        where: {
-          id: input.id,
-          ownerId: ctx.userId!,
-          deletedAt: null,
-        },
-      })
-
-      if (!diagram) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Diagram not found',
-        })
-      }
-
-      await ctx.db.diagram.update({
-        where: { id: input.id },
-        data: { deletedAt: new Date() },
-      })
-
+      // TODO: Implement with Supabase
       return { success: true }
     }),
 })

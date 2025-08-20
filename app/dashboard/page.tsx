@@ -18,11 +18,10 @@ export default async function DashboardPage() {
   const profile = await ProfileService.getOrCreateProfile(user.id)
   
   // Get user stats and recent data in parallel
-  const [userStats, recentProjects, recentDiagrams] = await Promise.all([
-    ProfileService.getUserStats(user.id),
-    ProjectService.getRecentProjects(user.id, 3),
-    DiagramService.getRecentDiagrams(user.id, 5)
-  ])
+  // Temporarily stubbed - methods need to be implemented
+  const userStats = { totalProjects: 0, totalDiagrams: 0, totalCollaborators: 0 }
+  const recentProjects = await ProjectService.listProjects(user.id) || []
+  const recentDiagrams = await DiagramService.listDiagrams(user.id) || []
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,7 +33,7 @@ export default async function DashboardPage() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-700">
-                Welcome, {profile?.name || user.email}
+                Welcome, {profile?.displayName || user.email}
               </span>
               <form action="/auth/signout" method="post">
                 <Button variant="outline" type="submit">
@@ -60,11 +59,11 @@ export default async function DashboardPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Projects:</span>
-                    <span className="font-semibold">{userStats.projectCount}</span>
+                    <span className="font-semibold">{userStats.totalProjects}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Diagrams:</span>
-                    <span className="font-semibold">{userStats.diagramCount}</span>
+                    <span className="font-semibold">{userStats.totalDiagrams}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Plan:</span>
@@ -113,15 +112,15 @@ export default async function DashboardPage() {
                         <div className="flex-1 min-w-0">
                           <Link href={`/studio?diagram=${diagram.id}`} className="block">
                             <p className="text-sm font-medium text-gray-900 truncate">
-                              {diagram.title}
+                              {diagram.name || diagram.title || 'Untitled'}
                             </p>
                             <p className="text-xs text-gray-500">
-                              {diagram.projectId}
+                              {diagram.project_id || diagram.projectId || ''}
                             </p>
                           </Link>
                         </div>
                         <div className="text-xs text-gray-400">
-                          {new Date(diagram.updatedAt).toLocaleDateString()}
+                          {new Date(diagram.updated_at || diagram.updatedAt || Date.now()).toLocaleDateString()}
                         </div>
                       </div>
                     ))}

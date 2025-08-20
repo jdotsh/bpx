@@ -3,19 +3,19 @@
  * Implements Result pattern and comprehensive error management
  */
 
-import { prisma } from '@/lib/prisma'
-import type { Project, Diagram } from '@prisma/client'
-import type { CreateProjectInput, UpdateProjectInput } from '@/lib/validations/project'
+import { createServerClient } from '@/lib/auth/server'
 import { Result, Ok, Err } from '@/lib/core/patterns/result'
 import { ApplicationError, ValidationError, BusinessLogicError, SystemError } from '@/lib/core/errors/application-error'
 import { ErrorService } from '@/lib/core/errors/error-service'
 
-export interface ProjectWithDiagrams extends Project {
-  diagrams: (Partial<Diagram> & { 
-    id: string
-    title: string
-    updatedAt: Date
-  })[]
+export interface ProjectWithDiagrams {
+  id: string
+  name: string
+  description?: string
+  ownerId: string
+  createdAt: Date
+  updatedAt: Date
+  diagrams: any[]
   _count: {
     diagrams: number
   }
@@ -28,448 +28,219 @@ export interface ProjectStats {
   storageUsed: number
 }
 
-export class ProjectService {
+export class EnhancedProjectService {
   
-  /**
-   * Create a new project with comprehensive validation
-   */
   static async createProject(
     userId: string, 
-    data: CreateProjectInput
-  ): Promise<Result<Project>> {
-    const context = { 
-      operation: 'createProject', 
-      userId,
-      projectName: data.name 
-    }
-
+    data: any
+  ): Promise<Result<any, ApplicationError>> {
     try {
-      // Validation
-      if (!userId) {
-        return Err(new ValidationError('User ID is required', 'userId', userId, context))
-      }
-
-      if (!data.name?.trim()) {
-        return Err(new ValidationError('Project name is required', 'name', data.name, context))
-      }
-
-      // Business logic validation
-      const existingProject = await prisma.project.findFirst({
-        where: {
-          name: data.name.trim(),
-          ownerId: userId,
-          deletedAt: null
-        }
-      })
-
-      if (existingProject) {
-        return Err(new BusinessLogicError(
-          `Project with name "${data.name}" already exists`,
-          'PROJECT_ALREADY_EXISTS',
-          context
-        ))
-      }
-
-      // Create project
-      const project = await prisma.project.create({
-        data: {
-          ...data,
-          name: data.name.trim(),
-          ownerId: userId,
+      const supabase = createServerClient()
+      
+      const { data: project, error } = await supabase
+        .from('projects')
+        .insert({
+          name: data.name,
+          description: data.description,
+          owner_id: userId,
           version: 1,
-          metadata: data.metadata as any
-        }
-      })
+          metadata: data.metadata || {}
+        })
+        .select()
+        .single()
+
+      if (error) {
+        return Err(new SystemError('Failed to create project', 'CREATE_PROJECT_ERROR'))
+      }
 
       return Ok(project)
-
     } catch (error) {
-      const appError = new SystemError(
-        'Failed to create project',
-        'PROJECT_CREATE_FAILED',
-        error instanceof Error ? error : undefined,
-        context
-      )
-      ErrorService.handle(appError, context)
-      return Err(appError)
+      console.error('Error creating project:', error)
+      return Err(new SystemError('Unexpected error creating project', 'CREATE_PROJECT_UNEXPECTED'))
     }
   }
-
-  /**
-   * Get project by ID with access control
-   */
-  static async getProjectById(
+  
+  static async updateProject(
+    userId: string, 
     projectId: string, 
-    userId: string
-  ): Promise<Result<ProjectWithDiagrams>> {
-    const context = { 
-      operation: 'getProjectById', 
-      userId, 
-      projectId 
-    }
-
+    data: any
+  ): Promise<Result<any, ApplicationError>> {
     try {
-      // Validation
-      if (!projectId) {
-        return Err(new ValidationError('Project ID is required', 'projectId', projectId, context))
-      }
+      const supabase = createServerClient()
+      
+      const { data: project, error } = await supabase
+        .from('projects')
+        .update({
+          name: data.name,
+          description: data.description,
+          metadata: data.metadata,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', projectId)
+        .eq('owner_id', userId)
+        .select()
+        .single()
 
-      if (!userId) {
-        return Err(new ValidationError('User ID is required', 'userId', userId, context))
+      if (error) {
+        return Err(new SystemError('Failed to update project', 'UPDATE_PROJECT_ERROR'))
       }
-
-      const project = await prisma.project.findFirst({
-        where: {
-          id: projectId,
-          ownerId: userId,
-          deletedAt: null
-        },
-        include: {
-          diagrams: {
-            where: { deletedAt: null },
-            orderBy: { updatedAt: 'desc' },
-            select: {
-              id: true,
-              title: true,
-              thumbnailUrl: true,
-              metadata: true,
-              version: true,
-              isPublic: true,
-              createdAt: true,
-              updatedAt: true
-            }
-          },
-          _count: {
-            select: { diagrams: true }
-          }
-        }
-      })
 
       if (!project) {
-        return Err(new BusinessLogicError(
-          'Project not found or access denied',
-          'PROJECT_NOT_FOUND',
-          context
-        ))
+        return Err(new BusinessLogicError('Project not found or access denied', 'PROJECT_NOT_FOUND'))
       }
-
-      return Ok(project as ProjectWithDiagrams)
-
-    } catch (error) {
-      const appError = new SystemError(
-        'Failed to retrieve project',
-        'PROJECT_FETCH_FAILED',
-        error instanceof Error ? error : undefined,
-        context
-      )
-      ErrorService.handle(appError, context)
-      return Err(appError)
-    }
-  }
-
-  /**
-   * Get user projects with pagination and filtering
-   */
-  static async getUserProjects(
-    userId: string, 
-    options: {
-      page?: number
-      limit?: number
-      search?: string
-      sortBy?: 'name' | 'updatedAt' | 'createdAt'
-      sortOrder?: 'asc' | 'desc'
-    } = {}
-  ): Promise<Result<{ projects: ProjectWithDiagrams[]; total: number; hasMore: boolean }>> {
-    const { 
-      page = 1, 
-      limit = 20, 
-      search,
-      sortBy = 'updatedAt',
-      sortOrder = 'desc'
-    } = options
-
-    const context = { 
-      operation: 'getUserProjects', 
-      userId, 
-      page, 
-      limit,
-      search
-    }
-
-    try {
-      // Validation
-      if (!userId) {
-        return Err(new ValidationError('User ID is required', 'userId', userId, context))
-      }
-
-      if (page < 1) {
-        return Err(new ValidationError('Page must be greater than 0', 'page', page, context))
-      }
-
-      if (limit < 1 || limit > 100) {
-        return Err(new ValidationError('Limit must be between 1 and 100', 'limit', limit, context))
-      }
-
-      const where = {
-        ownerId: userId,
-        deletedAt: null,
-        ...(search && {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' as const } },
-            { description: { contains: search, mode: 'insensitive' as const } }
-          ]
-        })
-      }
-
-      // Get total count for pagination
-      const total = await prisma.project.count({ where })
-
-      // Get projects
-      const projects = await prisma.project.findMany({
-        where,
-        include: {
-          diagrams: {
-            where: { deletedAt: null },
-            orderBy: { updatedAt: 'desc' },
-            take: 3, // Only show 3 recent diagrams per project
-            select: {
-              id: true,
-              title: true,
-              thumbnailUrl: true,
-              updatedAt: true
-            }
-          },
-          _count: {
-            select: { diagrams: true }
-          }
-        },
-        orderBy: { [sortBy]: sortOrder },
-        skip: (page - 1) * limit,
-        take: limit
-      })
-
-      const hasMore = total > page * limit
-
-      return Ok({
-        projects: projects as ProjectWithDiagrams[],
-        total,
-        hasMore
-      })
-
-    } catch (error) {
-      const appError = new SystemError(
-        'Failed to retrieve user projects',
-        'USER_PROJECTS_FETCH_FAILED',
-        error instanceof Error ? error : undefined,
-        context
-      )
-      ErrorService.handle(appError, context)
-      return Err(appError)
-    }
-  }
-
-  /**
-   * Update project with validation
-   */
-  static async updateProject(
-    projectId: string,
-    userId: string,
-    data: UpdateProjectInput
-  ): Promise<Result<Project>> {
-    const context = { 
-      operation: 'updateProject', 
-      userId, 
-      projectId 
-    }
-
-    try {
-      // Validation
-      if (!projectId) {
-        return Err(new ValidationError('Project ID is required', 'projectId', projectId, context))
-      }
-
-      if (!userId) {
-        return Err(new ValidationError('User ID is required', 'userId', userId, context))
-      }
-
-      // Check if project exists and user has access
-      const existingProject = await prisma.project.findFirst({
-        where: {
-          id: projectId,
-          ownerId: userId,
-          deletedAt: null
-        }
-      })
-
-      if (!existingProject) {
-        return Err(new BusinessLogicError(
-          'Project not found or access denied',
-          'PROJECT_NOT_FOUND',
-          context
-        ))
-      }
-
-      // Check for name conflicts if name is being updated
-      if (data.name && data.name !== existingProject.name) {
-        const nameConflict = await prisma.project.findFirst({
-          where: {
-            name: data.name.trim(),
-            ownerId: userId,
-            deletedAt: null,
-            id: { not: projectId }
-          }
-        })
-
-        if (nameConflict) {
-          return Err(new BusinessLogicError(
-            `Project with name "${data.name}" already exists`,
-            'PROJECT_NAME_CONFLICT',
-            context
-          ))
-        }
-      }
-
-      // Update project
-      const project = await prisma.project.update({
-        where: {
-          id: projectId,
-          ownerId: userId,
-          deletedAt: null
-        },
-        data: {
-          ...data,
-          ...(data.name && { name: data.name.trim() }),
-          metadata: data.metadata as any,
-          version: { increment: 1 }
-        }
-      })
 
       return Ok(project)
-
     } catch (error) {
-      const appError = new SystemError(
-        'Failed to update project',
-        'PROJECT_UPDATE_FAILED',
-        error instanceof Error ? error : undefined,
-        context
-      )
-      ErrorService.handle(appError, context)
-      return Err(appError)
+      console.error('Error updating project:', error, { userId, projectId })
+      return Err(new SystemError('Unexpected error updating project', 'UPDATE_PROJECT_UNEXPECTED'))
     }
   }
-
-  /**
-   * Soft delete project
-   */
+  
   static async deleteProject(
-    projectId: string,
-    userId: string
-  ): Promise<Result<void>> {
-    const context = { 
-      operation: 'deleteProject', 
-      userId, 
-      projectId 
-    }
-
+    userId: string, 
+    projectId: string
+  ): Promise<Result<boolean, ApplicationError>> {
     try {
-      // Validation
-      if (!projectId) {
-        return Err(new ValidationError('Project ID is required', 'projectId', projectId, context))
+      const supabase = createServerClient()
+      
+      // Check if project has diagrams
+      const { data: diagrams } = await supabase
+        .from('diagrams')
+        .select('id')
+        .eq('project_id', projectId)
+        .limit(1)
+      
+      if (diagrams && diagrams.length > 0) {
+        return Err(new BusinessLogicError('Cannot delete project with existing diagrams', 'PROJECT_HAS_DIAGRAMS'))
+      }
+      
+      // Soft delete
+      const { error } = await supabase
+        .from('projects')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', projectId)
+        .eq('owner_id', userId)
+
+      if (error) {
+        return Err(new SystemError('Failed to delete project', 'DELETE_PROJECT_ERROR'))
       }
 
-      if (!userId) {
-        return Err(new ValidationError('User ID is required', 'userId', userId, context))
-      }
-
-      // Check if project exists and user has access
-      const existingProject = await prisma.project.findFirst({
-        where: {
-          id: projectId,
-          ownerId: userId,
-          deletedAt: null
-        }
-      })
-
-      if (!existingProject) {
-        return Err(new BusinessLogicError(
-          'Project not found or access denied',
-          'PROJECT_NOT_FOUND',
-          context
-        ))
-      }
-
-      // Soft delete project (this will cascade to diagrams via triggers or app logic)
-      await prisma.project.update({
-        where: {
-          id: projectId,
-          ownerId: userId,
-          deletedAt: null
-        },
-        data: {
-          deletedAt: new Date()
-        }
-      })
-
-      return Ok(undefined)
-
+      return Ok(true)
     } catch (error) {
-      const appError = new SystemError(
-        'Failed to delete project',
-        'PROJECT_DELETE_FAILED',
-        error instanceof Error ? error : undefined,
-        context
-      )
-      ErrorService.handle(appError, context)
-      return Err(appError)
+      console.error('Error deleting project:', error, { userId, projectId })
+      return Err(new SystemError('Unexpected error deleting project', 'DELETE_PROJECT_UNEXPECTED'))
     }
   }
-
-  /**
-   * Get project statistics for user
-   */
-  static async getProjectStats(userId: string): Promise<Result<ProjectStats>> {
-    const context = { operation: 'getProjectStats', userId }
-
+  
+  static async getProject(
+    userId: string, 
+    projectId: string
+  ): Promise<Result<ProjectWithDiagrams, ApplicationError>> {
     try {
-      if (!userId) {
-        return Err(new ValidationError('User ID is required', 'userId', userId, context))
+      const supabase = createServerClient()
+      
+      const { data: project, error } = await supabase
+        .from('projects')
+        .select(`
+          *,
+          diagrams (
+            id,
+            name,
+            updated_at
+          )
+        `)
+        .eq('id', projectId)
+        .eq('owner_id', userId)
+        .is('deleted_at', null)
+        .single()
+
+      if (error) {
+        return Err(new SystemError('Failed to fetch project', 'FETCH_PROJECT_ERROR'))
       }
 
-      const [projectCount, diagramCount] = await Promise.all([
-        prisma.project.count({
-          where: { ownerId: userId, deletedAt: null }
-        }),
-        prisma.diagram.count({
-          where: { ownerId: userId, deletedAt: null }
-        })
-      ])
+      if (!project) {
+        return Err(new BusinessLogicError('Project not found', 'PROJECT_NOT_FOUND'))
+      }
 
-      // Calculate storage usage (simplified - in reality you'd measure actual file sizes)
-      const activeProjects = await prisma.project.findMany({
-        where: { 
-          ownerId: userId, 
-          deletedAt: null,
-          updatedAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // Active in last 30 days
-        },
-        select: { id: true }
-      })
+      const enhancedProject = {
+        ...project,
+        _count: { diagrams: project.diagrams?.length || 0 }
+      }
 
-      return Ok({
-        totalProjects: projectCount,
-        activeProjects: activeProjects.length,
-        totalDiagrams: diagramCount,
-        storageUsed: diagramCount * 1024 // Simplified calculation
-      })
-
+      return Ok(enhancedProject)
     } catch (error) {
-      const appError = new SystemError(
-        'Failed to retrieve project statistics',
-        'PROJECT_STATS_FAILED',
-        error instanceof Error ? error : undefined,
-        context
-      )
-      ErrorService.handle(appError, context)
-      return Err(appError)
+      console.error('Error fetching project:', error, { userId, projectId })
+      return Err(new SystemError('Unexpected error fetching project', 'FETCH_PROJECT_UNEXPECTED'))
+    }
+  }
+  
+  static async listProjects(userId: string): Promise<Result<ProjectWithDiagrams[], ApplicationError>> {
+    try {
+      const supabase = createServerClient()
+      
+      const { data: projects, error } = await supabase
+        .from('projects')
+        .select(`
+          *,
+          diagrams (
+            id,
+            name,
+            updated_at
+          )
+        `)
+        .eq('owner_id', userId)
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false })
+
+      if (error) {
+        return Err(new SystemError('Failed to list projects', 'LIST_PROJECTS_ERROR'))
+      }
+
+      const enhancedProjects = projects?.map(project => ({
+        ...project,
+        _count: { diagrams: project.diagrams?.length || 0 }
+      })) || []
+
+      return Ok(enhancedProjects)
+    } catch (error) {
+      console.error('Error listing projects:', error, { userId })
+      return Err(new SystemError('Unexpected error listing projects', 'LIST_PROJECTS_UNEXPECTED'))
+    }
+  }
+  
+  static async getProjectStats(userId: string): Promise<Result<ProjectStats, ApplicationError>> {
+    try {
+      const supabase = createServerClient()
+      
+      // Get project counts
+      const { count: totalProjects } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('owner_id', userId)
+      
+      const { count: activeProjects } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('owner_id', userId)
+        .is('deleted_at', null)
+      
+      // Get diagram count
+      const { count: totalDiagrams } = await supabase
+        .from('diagrams')
+        .select('*', { count: 'exact', head: true })
+        .eq('owner_id', userId)
+      
+      const stats: ProjectStats = {
+        totalProjects: totalProjects || 0,
+        activeProjects: activeProjects || 0,
+        totalDiagrams: totalDiagrams || 0,
+        storageUsed: 0 // Placeholder - would need actual storage calculation
+      }
+
+      return Ok(stats)
+    } catch (error) {
+      console.error('Error fetching project stats:', error, { userId })
+      return Err(new SystemError('Failed to fetch project statistics', 'FETCH_STATS_ERROR'))
     }
   }
 }

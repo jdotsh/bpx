@@ -23,11 +23,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const query = listQuerySchema.parse(Object.fromEntries(searchParams))
 
-    const diagrams = await DiagramService.getUserDiagrams(
+    const diagrams = await DiagramService.listDiagrams(
       user.id,
-      query.projectId,
-      query.page,
-      query.limit
+      query.projectId
     )
 
     return NextResponse.json({

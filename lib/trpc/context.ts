@@ -1,15 +1,14 @@
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { prisma } from '@/lib/prisma'
 
 export async function createContext(opts: CreateNextContextOptions) {
   // Create Supabase server client
   const cookieStore = cookies()
   
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key',
     {
       cookies: {
         get(name: string) {
@@ -23,7 +22,6 @@ export async function createContext(opts: CreateNextContextOptions) {
   const { data: { user } } = await supabase.auth.getUser()
 
   return {
-    db: prisma,
     supabase,
     user,
     userId: user?.id,
