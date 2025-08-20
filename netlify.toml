@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "./scripts/netlify-build.sh"
   publish = ".next"
 
 [[plugins]]
@@ -9,8 +9,6 @@
   NODE_VERSION = "18"
   # Skip type checking and linting in production build if needed
   NEXT_TELEMETRY_DISABLED = "1"
-  # Disable secret scanning for public env vars
-  NETLIFY_SKIP_SECRET_SCANNING = "true"
 
 [[redirects]]
   from = "/"
