@@ -4,7 +4,7 @@ echo "🧹 Cleaning Next.js build cache..."
 rm -rf .next node_modules/.cache
 
 echo "📦 Installing dependencies..."
-npm ci
+npm install
 
 echo "🔨 Building application..."
 npm run build
